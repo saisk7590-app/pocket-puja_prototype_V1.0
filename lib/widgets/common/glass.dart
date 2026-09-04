@@ -37,7 +37,11 @@ class GlassPanel extends StatelessWidget {
             borderRadius: radius,
             border: Border.all(color: borderColor.withValues(alpha: 0.18)),
             boxShadow: const [
-              BoxShadow(color: Colors.black26, blurRadius: 32, offset: Offset(0, 8)),
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 32,
+                offset: Offset(0, 8),
+              ),
             ],
           ),
           child: child,
@@ -82,7 +86,9 @@ class GlassPanelGold extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.primary.withValues(alpha: 0.06),
             borderRadius: radius,
-            border: Border.all(color: AppColors.primary.withValues(alpha: 0.25)),
+            border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.25),
+            ),
           ),
           child: child,
         ),
@@ -152,6 +158,7 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final VoidCallback? onBack;
   final VoidCallback? onProfile;
+  final Widget? leading;
   final Widget? trailing;
   final bool showBack;
 
@@ -160,6 +167,7 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.title = 'Pocket Puja',
     this.onBack,
     this.onProfile,
+    this.leading,
     this.trailing,
     this.showBack = true,
   });
@@ -183,28 +191,35 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
             children: [
               SizedBox(
                 width: 44,
-                child: showBack
-                    ? IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new, size: 18),
-                        color: AppColors.primary,
-                        onPressed: onBack ?? () => Navigator.maybePop(context),
-                      )
-                    : null,
+                child:
+                    leading ??
+                    (showBack
+                        ? IconButton(
+                            icon: const Icon(
+                              Icons.arrow_back_ios_new,
+                              size: 18,
+                            ),
+                            color: AppColors.primary,
+                            onPressed:
+                                onBack ?? () => Navigator.maybePop(context),
+                          )
+                        : null),
               ),
               Expanded(
                 child: Text(
                   title,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: AppColors.primary,
-                        shadows: AppTheme.goldGlow,
-                        fontWeight: FontWeight.w800,
-                      ),
+                    color: AppColors.primary,
+                    shadows: AppTheme.goldGlow,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
               SizedBox(
                 width: 44,
-                child: trailing ??
+                child:
+                    trailing ??
                     IconButton(
                       icon: const Icon(Icons.account_circle_outlined),
                       color: AppColors.primary,
@@ -225,7 +240,12 @@ class GlassBottomNav extends StatelessWidget {
   final ValueChanged<int> onTap;
   final List<IconData> icons;
 
-  const GlassBottomNav({super.key, required this.currentIndex, required this.onTap, required this.icons});
+  const GlassBottomNav({
+    super.key,
+    required this.currentIndex,
+    required this.onTap,
+    required this.icons,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -241,7 +261,12 @@ class GlassBottomNav extends StatelessWidget {
               color: Colors.white.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(100),
               border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-              boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.15), blurRadius: 32)],
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.15),
+                  blurRadius: 32,
+                ),
+              ],
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -254,9 +279,18 @@ class GlassBottomNav extends StatelessWidget {
                     padding: const EdgeInsets.all(10),
                     child: Icon(
                       icons[i],
-                      color: selected ? AppColors.primary : AppColors.onSurfaceVariant.withValues(alpha: 0.7),
+                      color: selected
+                          ? AppColors.primary
+                          : AppColors.onSurfaceVariant.withValues(alpha: 0.7),
                       size: selected ? 26 : 24,
-                      shadows: selected ? [Shadow(color: AppColors.primary.withValues(alpha: 0.8), blurRadius: 8)] : null,
+                      shadows: selected
+                          ? [
+                              Shadow(
+                                color: AppColors.primary.withValues(alpha: 0.8),
+                                blurRadius: 8,
+                              ),
+                            ]
+                          : null,
                     ),
                   ),
                 );
@@ -278,6 +312,7 @@ class GlassScaffold extends StatelessWidget {
   final Widget? floatingActionButton;
   final bool showAppBar;
   final VoidCallback? onBack;
+  final Widget? leading;
   final Widget? trailing;
   final bool showBack;
 
@@ -290,6 +325,7 @@ class GlassScaffold extends StatelessWidget {
     this.floatingActionButton,
     this.showAppBar = true,
     this.onBack,
+    this.leading,
     this.trailing,
     this.showBack = true,
   });
@@ -299,7 +335,15 @@ class GlassScaffold extends StatelessWidget {
     return Scaffold(
       extendBody: true,
       backgroundColor: Colors.transparent,
-      appBar: showAppBar ? GlassAppBar(title: title, onBack: onBack, trailing: trailing, showBack: showBack) : null,
+      appBar: showAppBar
+          ? GlassAppBar(
+              title: title,
+              onBack: onBack,
+              leading: leading,
+              trailing: trailing,
+              showBack: showBack,
+            )
+          : null,
       floatingActionButton: floatingActionButton,
       bottomNavigationBar: bottomNav,
       body: Container(
@@ -342,8 +386,18 @@ class PrimaryButton extends StatelessWidget {
           gradient: active ? AppGradients.goldButton : null,
           color: active ? null : AppColors.primary.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(16),
-          border: active ? null : Border.all(color: AppColors.primary.withValues(alpha: 0.25)),
-          boxShadow: active ? [BoxShadow(color: AppColors.primary.withValues(alpha: 0.4), blurRadius: 20, offset: const Offset(0, 6))] : null,
+          border: active
+              ? null
+              : Border.all(color: AppColors.primary.withValues(alpha: 0.25)),
+          boxShadow: active
+              ? [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.4),
+                    blurRadius: 20,
+                    offset: const Offset(0, 6),
+                  ),
+                ]
+              : null,
         ),
         child: Material(
           color: Colors.transparent,
@@ -352,12 +406,39 @@ class PrimaryButton extends StatelessWidget {
             onTap: active ? onTap : null,
             child: Center(
               child: isLoading
-                  ? SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: active ? AppColors.onPrimary : AppColors.primary.withValues(alpha: 0.5)))
+                  ? SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: active
+                            ? AppColors.onPrimary
+                            : AppColors.primary.withValues(alpha: 0.5),
+                      ),
+                    )
                   : Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(label, style: TextStyle(color: active ? AppColors.onPrimary : AppColors.primary.withValues(alpha: 0.4), fontWeight: FontWeight.w800, fontSize: 15)),
-                        if (icon != null) ...[const SizedBox(width: 8), Icon(icon, color: active ? AppColors.onPrimary : AppColors.primary.withValues(alpha: 0.4), size: 18)],
+                        Text(
+                          label,
+                          style: TextStyle(
+                            color: active
+                                ? AppColors.onPrimary
+                                : AppColors.primary.withValues(alpha: 0.4),
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15,
+                          ),
+                        ),
+                        if (icon != null) ...[
+                          const SizedBox(width: 8),
+                          Icon(
+                            icon,
+                            color: active
+                                ? AppColors.onPrimary
+                                : AppColors.primary.withValues(alpha: 0.4),
+                            size: 18,
+                          ),
+                        ],
                       ],
                     ),
             ),
@@ -375,7 +456,12 @@ class GhostButton extends StatelessWidget {
   final VoidCallback? onTap;
   final double height;
 
-  const GhostButton({super.key, required this.label, this.onTap, this.height = 52});
+  const GhostButton({
+    super.key,
+    required this.label,
+    this.onTap,
+    this.height = 52,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -386,7 +472,9 @@ class GhostButton extends StatelessWidget {
         style: OutlinedButton.styleFrom(
           foregroundColor: Colors.white70,
           side: const BorderSide(color: Colors.white24),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
         ),
         child: Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
       ),
@@ -402,7 +490,12 @@ class DestructiveButton extends StatelessWidget {
   final VoidCallback? onTap;
   final IconData? icon;
 
-  const DestructiveButton({super.key, required this.label, this.onTap, this.icon});
+  const DestructiveButton({
+    super.key,
+    required this.label,
+    this.onTap,
+    this.icon,
+  });
 
   static const _red = Color(0xFFE8A0A0);
 
@@ -413,12 +506,21 @@ class DestructiveButton extends StatelessWidget {
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(18), border: Border.all(color: _red.withValues(alpha: 0.4))),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: _red.withValues(alpha: 0.4)),
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (icon != null) ...[Icon(icon, color: _red, size: 18), const SizedBox(width: 10)],
-            Text(label, style: const TextStyle(color: _red, fontWeight: FontWeight.w700)),
+            if (icon != null) ...[
+              Icon(icon, color: _red, size: 18),
+              const SizedBox(width: 10),
+            ],
+            Text(
+              label,
+              style: const TextStyle(color: _red, fontWeight: FontWeight.w700),
+            ),
           ],
         ),
       ),
@@ -435,7 +537,14 @@ class SettingsTile extends StatelessWidget {
   final VoidCallback? onTap;
   final Widget? trailing;
 
-  const SettingsTile({super.key, required this.icon, required this.title, required this.subtitle, this.onTap, this.trailing});
+  const SettingsTile({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    this.onTap,
+    this.trailing,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -448,8 +557,12 @@ class SettingsTile extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              width: 42, height: 42,
-              decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Icon(icon, color: AppColors.primary, size: 20),
             ),
             const SizedBox(width: 14),
@@ -457,8 +570,18 @@ class SettingsTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14)),
-                  Text(subtitle, style: const TextStyle(color: Colors.white54, fontSize: 11)),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(color: Colors.white54, fontSize: 11),
+                  ),
                 ],
               ),
             ),
@@ -478,6 +601,11 @@ class SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(text, style: Theme.of(context).textTheme.labelLarge?.copyWith(letterSpacing: 1.2));
+    return Text(
+      text,
+      style: Theme.of(
+        context,
+      ).textTheme.labelLarge?.copyWith(letterSpacing: 1.2),
+    );
   }
 }

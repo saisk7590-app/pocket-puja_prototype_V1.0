@@ -30,6 +30,7 @@ class HomeScreen extends StatelessWidget {
 
     return GlassScaffold(
       showBack: false,
+      leading: IconButton(icon: const Icon(Icons.person_outline), color: AppColors.primary, onPressed: onProfile),
       trailing: IconButton(icon: const Icon(Icons.notifications_none), color: AppColors.primary, onPressed: onNotifications),
       body: RefreshIndicator(
         color: AppColors.primary,
