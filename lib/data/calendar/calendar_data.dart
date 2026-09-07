@@ -1,4 +1,4 @@
-/// Mock data for the Calendar module — Panchangam, Festivals, Rashi.
+// Mock data for the Calendar module — Panchangam, Festivals, Rashi.
 
 class FestivalData {
   final int day, month;

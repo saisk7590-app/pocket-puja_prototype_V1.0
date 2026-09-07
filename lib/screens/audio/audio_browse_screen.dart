@@ -204,7 +204,7 @@ class _AudioBrowseScreenState extends State<AudioBrowseScreen> {
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: _filters.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 8),
+                  separatorBuilder: (_, _) => const SizedBox(width: 8),
                   itemBuilder: (_, i) => _FilterChip(
                     label: _filters[i],
                     selected: _filter == _filters[i],

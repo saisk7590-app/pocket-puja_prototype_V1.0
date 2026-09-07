@@ -1,4 +1,4 @@
-/// Mock data for the Shop module.
+// Mock data for the Shop module.
 
 class CategoryData {
   final String label;

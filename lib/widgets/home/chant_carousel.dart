@@ -20,7 +20,7 @@ class ChantCarousel extends StatelessWidget {
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: tracks.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 14),
+            separatorBuilder: (_, _) => const SizedBox(width: 14),
             itemBuilder: (_, i) => GestureDetector(onTap: () => onTap(tracks[i]), child: _Card(track: tracks[i])),
           ),
         ),

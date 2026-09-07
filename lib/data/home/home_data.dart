@@ -1,5 +1,5 @@
-/// Mock data for the Home module. In a real app this would come from
-/// a backend; here it's just static sample data for the UI prototype.
+// Mock data for the Home module. In a real app this would come from
+// a backend; here it's just static sample data for the UI prototype.
 
 class DeityDay {
   final String dayName;

@@ -1,4 +1,4 @@
-/// Mock data for the Subscription module.
+// Mock data for the Subscription module.
 
 class PlanFeature {
   final String label;

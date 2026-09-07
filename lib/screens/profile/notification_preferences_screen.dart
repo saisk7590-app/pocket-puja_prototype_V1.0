@@ -52,7 +52,7 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
                 Text(p.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14)),
                 Text(p.subtitle, style: const TextStyle(color: Colors.white54, fontSize: 11)),
               ])),
-              Switch(value: _states[p.title] ?? false, activeColor: AppColors.onPrimary, activeTrackColor: AppColors.primary, onChanged: (_) => _tryToggle(p)),
+              Switch(value: _states[p.title] ?? false, activeThumbColor: AppColors.onPrimary, activeTrackColor: AppColors.primary, onChanged: (_) => _tryToggle(p)),
             ]),
           ),
         )).toList(),

@@ -54,7 +54,7 @@ class _ShopScreenState extends State<ShopScreen> {
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     itemCount: seasonalBanners.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 12),
+                    separatorBuilder: (_, _) => const SizedBox(width: 12),
                     itemBuilder: (_, i) => ClipRRect(
                       borderRadius: BorderRadius.circular(16),
                       child: SizedBox(width: 200, child: Stack(fit: StackFit.expand, children: [
@@ -75,7 +75,7 @@ class _ShopScreenState extends State<ShopScreen> {
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     itemCount: essentials.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 12),
+                    separatorBuilder: (_, _) => const SizedBox(width: 12),
                     itemBuilder: (_, i) => SizedBox(width: 130, child: ProductCard(product: essentials[i], onAdd: () => _addToCart(essentials[i].pricePaise))),
                   ),
                 ),

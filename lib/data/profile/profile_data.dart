@@ -1,4 +1,4 @@
-/// Mock data for the Profile module.
+// Mock data for the Profile module.
 
 class UserProfile {
   final String name, mobile, city, dob, rashi, level, seed;

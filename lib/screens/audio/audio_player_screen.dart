@@ -44,7 +44,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     final lyrics = widget.track.lyrics.isNotEmpty ? widget.track.lyrics : sampleLyrics;
-    final activeLine = lyrics[_activeLineIndex.clamp(0, lyrics.length - 1)];
+  //  final activeLine = lyrics[_activeLineIndex.clamp(0, lyrics.length - 1)];
 
     return GlassScaffold(
       body: SingleChildScrollView(

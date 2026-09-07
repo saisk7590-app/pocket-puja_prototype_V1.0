@@ -37,7 +37,7 @@ class _RashiPhalamScreenState extends State<RashiPhalamScreen> {
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: rashiSigns.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 10),
+            separatorBuilder: (_, _) => const SizedBox(width: 10),
             itemBuilder: (_, i) {
               final s = rashiSigns[i];
               final sel = s.name == _selected.name;

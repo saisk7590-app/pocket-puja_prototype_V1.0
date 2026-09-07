@@ -93,7 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Container(width: 42, height: 42, decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)), child: const Icon(Icons.translate, color: AppColors.primary, size: 20)),
                 const SizedBox(width: 14),
                 const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('App Language', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14)), Text('తెలుగు / English', style: TextStyle(color: Colors.white54, fontSize: 11))])),
-                Switch(value: _teluguLang, activeColor: AppColors.onPrimary, activeTrackColor: AppColors.primary, onChanged: (v) => setState(() => _teluguLang = v)),
+               Switch(value: _teluguLang, activeThumbColor: AppColors.onPrimary, activeTrackColor: AppColors.primary, onChanged: (v) => setState(() => _teluguLang = v)),
               ]),
             ),
           ),

@@ -44,7 +44,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: _timeFilters.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
               itemBuilder: (_, i) => _chip(_timeFilters[i], _timeFilter == _timeFilters[i], () => setState(() => _timeFilter = _timeFilters[i])),
             ),
           ),
@@ -54,7 +54,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: _statusFilters.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
               itemBuilder: (_, i) => _chip(_statusFilters[i], _statusFilter == _statusFilters[i], () => setState(() => _statusFilter = _statusFilters[i])),
             ),
           ),

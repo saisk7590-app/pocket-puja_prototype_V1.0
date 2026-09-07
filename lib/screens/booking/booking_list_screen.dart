@@ -59,7 +59,7 @@ class _BookingListScreenState extends State<BookingListScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               scrollDirection: Axis.horizontal,
               itemCount: _tabs.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 10),
+              separatorBuilder: (_, _) => const SizedBox(width: 10),
               itemBuilder: (_, i) => GestureDetector(
                 onTap: () => setState(() => _tab = i),
                 child: Container(

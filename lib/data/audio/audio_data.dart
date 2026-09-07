@@ -1,4 +1,4 @@
-/// Mock data for the Audio module (Chants + Podcasts).
+// Mock data for the Audio module (Chants + Podcasts).
 
 class LyricLine {
   final String telugu, roman, meaning;
