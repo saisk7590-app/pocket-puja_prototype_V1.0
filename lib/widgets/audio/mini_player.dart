@@ -35,10 +35,10 @@ class _MiniPlayerState extends State<MiniPlayer> {
             margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: AppColors.surfaceContainerHigh.withValues(alpha: 0.85),
+              color: AppColors.primary.withValues(alpha: 0.10),
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: Colors.white12),
-              boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.15), blurRadius: 16)],
+              border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+              boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.2), blurRadius: 18, offset: const Offset(0, 4))],
             ),
             child: Row(
               children: [

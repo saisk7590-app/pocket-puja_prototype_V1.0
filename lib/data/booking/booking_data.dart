@@ -31,22 +31,34 @@ class PanditData {
   const PanditData(this.name, this.title, this.seed, this.arrivalTime, this.rating, this.poojaCount);
 }
 
-const assignedPandit = PanditData('Shri Venkata Ramana', 'Senior Vedic Scholar', 'pandit', '08:30 AM', 4.9, 128);
+const panditVenkataRamana = PanditData('Shri Venkata Ramana', 'Senior Vedic Scholar', 'pandit1', '08:30 AM', 4.9, 128);
+const panditSubramanyam = PanditData('Shri Subramanyam Sharma', 'Homam Specialist', 'pandit2', '07:00 AM', 4.8, 96);
+const panditRaghava = PanditData('Shri Raghava Acharya', 'Vastu & Vratam Expert', 'pandit3', '09:15 AM', 4.7, 210);
 
 class BookingData {
   final String ref, poojaName, status, date;
   final int feePaise;
-  const BookingData(this.ref, this.poojaName, this.status, this.date, this.feePaise);
+  final PanditData? pandit; // null while PENDING (not yet assigned)
+  final int? myRating; // set only when status == RATED
+  final String? cancelReason; // set only when status == CANCELLED
+  const BookingData(this.ref, this.poojaName, this.status, this.date, this.feePaise, {this.pandit, this.myRating, this.cancelReason});
 }
 
 const activeBookings = [
-  BookingData('PP-A1B2C3D4', 'గణపతి హోమం', 'ASSIGNED', 'Jun 15, 2026 • 9:00 AM', 150000),
+  BookingData('PP-A1B2C3D4', 'గణపతి హోమం', 'ASSIGNED', 'Jun 15, 2026 • 9:00 AM', 150000, pandit: panditVenkataRamana),
   BookingData('PP-E5F6G7H8', 'సత్యనారాయణ వ్రతం', 'PENDING', 'Jun 20, 2026 • 10:00 AM', 200000),
+  BookingData('PP-Q1R2S3T4', 'రుద్రాభిషేకం', 'CONFIRMED', 'Jun 25, 2026 • 7:00 AM', 175000, pandit: panditSubramanyam),
 ];
 
 const completedBookings = [
-  BookingData('PP-I9J0K1L2', 'రుద్రాభిషేకం', 'COMPLETED', 'May 10, 2026', 180000),
-  BookingData('PP-M3N4O5P6', 'వాస్తు శాంతి', 'RATED', 'Apr 28, 2026', 200000),
+  BookingData('PP-I9J0K1L2', 'రుద్రాభిషేకం', 'COMPLETED', 'May 10, 2026', 180000, pandit: panditVenkataRamana),
+  BookingData('PP-M3N4O5P6', 'వాస్తు శాంతి', 'RATED', 'Apr 28, 2026', 200000, pandit: panditRaghava, myRating: 5),
+  BookingData('PP-U5V6W7X8', 'నామకరణం', 'DONE', 'Apr 12, 2026', 220000, pandit: panditRaghava),
+];
+
+const cancelledBookings = [
+  BookingData('PP-Z9Y8X7W6', 'సత్యనారాయణ వ్రతం', 'CANCELLED', 'Mar 3, 2026', 190000, cancelReason: 'Cancelled by you'),
+  BookingData('PP-K2L3M4N5', 'గృహప్రవేశం', 'CANCELLED', 'Feb 18, 2026', 210000, cancelReason: 'No Poojari available for this date'),
 ];
 
 class ItemData {

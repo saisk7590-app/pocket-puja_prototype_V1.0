@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common/glass.dart';
 import '../../data/profile/profile_data.dart';
+import 'add_edit_address_screen.dart';
 
 /// When [pickMode] is true (opened from Booking/Cart), tapping an address
 /// pops it back to the caller instead of just viewing/editing.
@@ -36,7 +37,7 @@ class AddressesScreen extends StatelessWidget {
                       ]),
                     ),
                     if (!pickMode) ...[
-                      IconButton(icon: const Icon(Icons.edit, color: Colors.white38, size: 18), onPressed: () {}),
+                      IconButton(icon: const Icon(Icons.edit, color: Colors.white38, size: 18), onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => AddEditAddressScreen(address: a)))),
                     ] else
                       const Icon(Icons.chevron_right, color: Colors.white38),
                   ]),
@@ -45,7 +46,7 @@ class AddressesScreen extends StatelessWidget {
           const SizedBox(height: 8),
           GlassPanel(
             padding: const EdgeInsets.all(16),
-            onTap: () {},
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AddEditAddressScreen())),
             child: Row(children: const [
               Icon(Icons.add_circle_outline, color: AppColors.primary),
               SizedBox(width: 12),

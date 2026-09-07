@@ -23,6 +23,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Widget build(BuildContext context) {
     return GlassScaffold(
       showBack: false,
+      title: 'Calendar',
       body: Column(
         children: [
           Padding(

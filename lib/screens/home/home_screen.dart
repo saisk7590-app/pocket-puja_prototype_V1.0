@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common/glass.dart';
 import '../../widgets/home/hero_panchangam_card.dart';
-import '../../widgets/home/rashi_chip.dart';
-import '../../widgets/home/active_booking_card.dart';
-import '../../widgets/home/festival_banner.dart';
+import '../../widgets/home/home_kpi_square.dart';
 import '../../widgets/home/chant_carousel.dart';
 import '../../data/home/home_data.dart';
 import '../../data/audio/audio_data.dart';
@@ -19,6 +17,39 @@ class HomeScreen extends StatelessWidget {
 
   const HomeScreen({super.key, this.onBookPooja, this.onListenAudio, this.onPanchangam, this.onNotifications, this.onProfile});
 
+  Widget _buildKpiRow(BuildContext context) {
+    final squares = <Widget>[
+      HomeKpiSquare(
+        icon: Icons.auto_awesome,
+        label: 'Your Rashi',
+        value: currentUserRashi.oneLiner,
+        onTap: onPanchangam ?? () {},
+      ),
+      HomeKpiSquare(
+        icon: Icons.event_available,
+        label: activeBooking.status,
+        value: activeBooking.poojaName,
+        gold: true,
+        onTap: onBookPooja ?? () {},
+      ),
+      HomeKpiSquare(
+        icon: Icons.celebration,
+        label: 'Festival',
+        value: '${upcomingFestival.name} in ${upcomingFestival.daysAway}',
+        onTap: onBookPooja ?? () {},
+      ),
+    ];
+
+    return Row(
+      children: [
+        for (int i = 0; i < squares.length; i++) ...[
+          if (i > 0) const SizedBox(width: 12),
+          Expanded(child: squares[i]),
+        ],
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final today = DateTime.now();
@@ -28,9 +59,9 @@ class HomeScreen extends StatelessWidget {
     final todaysFocus = focusTracks.isNotEmpty ? focusTracks : tracks.take(3).toList();
     final pickedForYou = tracks.reversed.take(3).toList(); // mock "listening history" based picks
 
-    return GlassScaffold(
+        return GlassScaffold(
       showBack: false,
-      leading: IconButton(icon: const Icon(Icons.person_outline), color: AppColors.primary, onPressed: onProfile),
+      leading: IconButton(icon: const Icon(Icons.account_circle_outlined), color: AppColors.primary, onPressed: onProfile),
       trailing: IconButton(icon: const Icon(Icons.notifications_none), color: AppColors.primary, onPressed: onNotifications),
       body: RefreshIndicator(
         color: AppColors.primary,
@@ -40,12 +71,8 @@ class HomeScreen extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 110),
           children: [
             HeroPanchangamCard(data: todayPanchangam, onTap: onPanchangam ?? () {}),
-            const SizedBox(height: 12),
-            RashiChip(rashi: currentUserRashi, onTap: onPanchangam ?? () {}),
-            const SizedBox(height: 12),
-            ActiveBookingCard(booking: activeBooking, onTap: onBookPooja ?? () {}),
-            const SizedBox(height: 12),
-            FestivalBanner(festival: upcomingFestival, onBookNow: onBookPooja ?? () {}),
+            const SizedBox(height: 14),
+            _buildKpiRow(context),
             const SizedBox(height: 28),
             ChantCarousel(
               headerLabel: "Today's Focus: ${todaysDeities.deities.join(' & ')}",

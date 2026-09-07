@@ -29,6 +29,7 @@ class _ShopScreenState extends State<ShopScreen> {
 
     return GlassScaffold(
       showBack: false,
+      title: 'Shop',
       trailing: Stack(clipBehavior: Clip.none, children: [
         IconButton(icon: const Icon(Icons.shopping_cart_outlined), color: AppColors.primary, onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CartScreen()))),
         if (_cartCount > 0) Positioned(right: 2, top: 2, child: Container(padding: const EdgeInsets.all(3), decoration: const BoxDecoration(color: Color(0xFFE05353), shape: BoxShape.circle), child: Text('$_cartCount', style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w700)))),

@@ -6,8 +6,10 @@ import '../common/network_image_placeholder.dart';
 
 class PanditCard extends StatelessWidget {
   final PanditData pandit;
-  final VoidCallback onCall, onMessage;
-  const PanditCard({super.key, required this.pandit, required this.onCall, required this.onMessage});
+  final String badgeLabel;
+  final bool showActions;
+  final VoidCallback? onCall, onMessage;
+  const PanditCard({super.key, required this.pandit, this.badgeLabel = 'Assigned', this.showActions = true, this.onCall, this.onMessage});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,7 @@ class PanditCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                       decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(20)),
-                      child: const Text('Assigned', style: TextStyle(color: AppColors.primary, fontSize: 10, fontWeight: FontWeight.w700)),
+                      child: Text(badgeLabel, style: const TextStyle(color: AppColors.primary, fontSize: 10, fontWeight: FontWeight.w700)),
                     ),
                     const SizedBox(height: 6),
                     Text(pandit.name, style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w700)),
@@ -38,22 +40,25 @@ class PanditCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text('${pandit.rating} · ${pandit.poojaCount} poojas', style: const TextStyle(color: Colors.white70, fontSize: 11)),
                     ]),
-                    Row(children: [
-                      const Icon(Icons.access_time, color: AppColors.primary, size: 14),
-                      const SizedBox(width: 4),
-                      Text('Arriving at ${pandit.arrivalTime}', style: const TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.w600)),
-                    ]),
+                    if (showActions)
+                      Row(children: [
+                        const Icon(Icons.access_time, color: AppColors.primary, size: 14),
+                        const SizedBox(width: 4),
+                        Text('Arriving at ${pandit.arrivalTime}', style: const TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.w600)),
+                      ]),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          Row(children: [
-            Expanded(child: _ActionBtn(icon: Icons.call, label: 'Call', onTap: onCall)),
-            const SizedBox(width: 12),
-            Expanded(child: _ActionBtn(icon: Icons.message_outlined, label: 'Message', onTap: onMessage)),
-          ]),
+          if (showActions) ...[
+            const SizedBox(height: 16),
+            Row(children: [
+              Expanded(child: _ActionBtn(icon: Icons.call, label: 'Call', onTap: onCall ?? () {})),
+              const SizedBox(width: 12),
+              Expanded(child: _ActionBtn(icon: Icons.message_outlined, label: 'Message', onTap: onMessage ?? () {})),
+            ]),
+          ],
         ],
       ),
     );

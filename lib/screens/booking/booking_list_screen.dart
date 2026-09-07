@@ -15,14 +15,31 @@ class BookingListScreen extends StatefulWidget {
 
 class _BookingListScreenState extends State<BookingListScreen> {
   int _tab = 0;
-  final _tabs = ['Active', 'Completed', 'Cancelled'];
+  final _tabs = ['All', 'Active', 'Completed', 'Cancelled'];
+
+  String _stepperStatus(String status) {
+    switch (status) {
+      case 'COMPLETED':
+      case 'RATED':
+        return 'DONE';
+      default:
+        return status;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final list = _tab == 0 ? activeBookings : (_tab == 1 ? completedBookings : <BookingData>[]);
+    final List<BookingData> list;
+    switch (_tab) {
+      case 0: list = [...activeBookings, ...completedBookings, ...cancelledBookings]; break;
+      case 1: list = activeBookings; break;
+      case 2: list = completedBookings; break;
+      default: list = cancelledBookings;
+    }
 
     return GlassScaffold(
       showBack: false,
+      title: 'My Bookings',
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 70),
         child: FloatingActionButton.extended(
@@ -36,24 +53,25 @@ class _BookingListScreenState extends State<BookingListScreen> {
       body: Column(
         children: [
           const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              children: List.generate(_tabs.length, (i) => Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: GestureDetector(
-                  onTap: () => setState(() => _tab = i),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-                    decoration: BoxDecoration(
-                      color: _tab == i ? AppColors.primary.withValues(alpha: 0.15) : Colors.white.withValues(alpha: 0.05),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: _tab == i ? AppColors.primary : Colors.white24),
-                    ),
-                    child: Text(_tabs[i], style: TextStyle(color: _tab == i ? AppColors.primary : Colors.white60, fontWeight: FontWeight.w600, fontSize: 13)),
+          SizedBox(
+            height: 40,
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              scrollDirection: Axis.horizontal,
+              itemCount: _tabs.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 10),
+              itemBuilder: (_, i) => GestureDetector(
+                onTap: () => setState(() => _tab = i),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+                  decoration: BoxDecoration(
+                    color: _tab == i ? AppColors.primary.withValues(alpha: 0.15) : Colors.white.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: _tab == i ? AppColors.primary : Colors.white24),
                   ),
+                  child: Text(_tabs[i], style: TextStyle(color: _tab == i ? AppColors.primary : Colors.white60, fontWeight: FontWeight.w600, fontSize: 13)),
                 ),
-              )),
+              ),
             ),
           ),
           const SizedBox(height: 16),
@@ -71,8 +89,8 @@ class _BookingListScreenState extends State<BookingListScreen> {
                       padding: const EdgeInsets.only(bottom: 14),
                       child: BookingCard(
                         booking: list[i],
-                        onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => BookingDetailScreen(poojaName: list[i].poojaName, bookingId: list[i].ref, status: list[i].status == 'PENDING' ? 'PENDING' : 'ASSIGNED'))),
-                        onRate: list[i].status == 'COMPLETED' ? () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => RatingScreen(bookingRef: list[i].ref, poojaName: list[i].poojaName))) : null,
+                        onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => BookingDetailScreen(poojaName: list[i].poojaName, bookingId: list[i].ref, status: _stepperStatus(list[i].status), pandit: list[i].pandit))),
+                        onRate: (list[i].status == 'COMPLETED' || list[i].status == 'DONE') ? () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => RatingScreen(bookingRef: list[i].ref, poojaName: list[i].poojaName))) : null,
                       ),
                     ),
                   ),

@@ -13,8 +13,11 @@ class BookingCard extends StatelessWidget {
     switch (status) {
       case 'PENDING': return const Color(0xFFFFC27A);
       case 'ASSIGNED': return AppColors.primary;
+      case 'CONFIRMED': return const Color(0xFF7FC8F8);
+      case 'DONE': return const Color(0xFF9DE6B4);
       case 'COMPLETED': return const Color(0xFF9DE6B4);
       case 'RATED': return AppColors.secondary;
+      case 'CANCELLED': return Colors.white38;
       default: return Colors.white54;
     }
   }
@@ -22,6 +25,10 @@ class BookingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = _statusColor(booking.status);
+    final canRate = booking.status == 'COMPLETED' || booking.status == 'DONE';
+    final isCancelled = booking.status == 'CANCELLED';
+    final isRated = booking.status == 'RATED';
+
     return GlassPanel(
       padding: const EdgeInsets.all(16),
       onTap: onTap,
@@ -54,7 +61,25 @@ class BookingCard extends StatelessWidget {
           ]),
           if (booking.status == 'PENDING')
             const Padding(padding: EdgeInsets.only(top: 8), child: Text('We typically assign within 4 hours.', style: TextStyle(color: Colors.white38, fontSize: 11))),
-          if (booking.status == 'COMPLETED' && onRate != null)
+          if (booking.status == 'CONFIRMED')
+            const Padding(padding: EdgeInsets.only(top: 8), child: Text('Your Poojari is confirmed for this date.', style: TextStyle(color: Colors.white38, fontSize: 11))),
+          if (isCancelled && booking.cancelReason != null)
+            Padding(padding: const EdgeInsets.only(top: 8), child: Row(children: [
+              const Icon(Icons.info_outline, size: 14, color: Colors.white38),
+              const SizedBox(width: 6),
+              Expanded(child: Text(booking.cancelReason!, style: const TextStyle(color: Colors.white38, fontSize: 11))),
+            ])),
+          // Already-rated bookings show the rating given, not a re-prompt.
+          if (isRated && booking.myRating != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Row(children: [
+                ...List.generate(5, (i) => Icon(i < booking.myRating! ? Icons.star : Icons.star_border, color: AppColors.secondary, size: 16)),
+                const SizedBox(width: 8),
+                const Text('You rated this', style: TextStyle(color: Colors.white38, fontSize: 11)),
+              ]),
+            ),
+          if (canRate && onRate != null)
             Padding(
               padding: const EdgeInsets.only(top: 12),
               child: SizedBox(width: double.infinity, child: OutlinedButton.icon(
