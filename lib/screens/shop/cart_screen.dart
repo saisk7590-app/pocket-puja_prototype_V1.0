@@ -3,9 +3,8 @@ import '../../theme/app_theme.dart';
 import '../../widgets/common/glass.dart';
 import '../../widgets/common/network_image_placeholder.dart';
 import '../../data/shop/shop_data.dart';
-import '../profile/addresses_screen.dart';
-
 import '../../data/profile/profile_data.dart';
+import '../profile/addresses_screen.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -89,11 +88,19 @@ class _CartScreenState extends State<CartScreen> {
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               const SectionLabel('PAYMENT METHOD'),
               const SizedBox(height: 14),
-              _payOption(0, Icons.qr_code, 'UPI / Google Pay', 'Instant & Secure'),
-              const SizedBox(height: 10),
-              _payOption(1, Icons.credit_card, 'Credit / Debit Card', 'Visa, Mastercard, Amex'),
-              const SizedBox(height: 10),
-              _payOption(2, Icons.account_balance, 'Netbanking', 'All major Indian banks'),
+              RadioGroup<int>(
+                groupValue: _paymentMethod,
+                onChanged: (v) => setState(() => _paymentMethod = v ?? 0),
+                child: Column(
+                  children: [
+                    _payOption(0, Icons.qr_code, 'UPI / Google Pay', 'Instant & Secure'),
+                    const SizedBox(height: 10),
+                    _payOption(1, Icons.credit_card, 'Credit / Debit Card', 'Visa, Mastercard, Amex'),
+                    const SizedBox(height: 10),
+                    _payOption(2, Icons.account_balance, 'Netbanking', 'All major Indian banks'),
+                  ],
+                ),
+              ),
             ]),
           ),
           const SizedBox(height: 24),
@@ -110,14 +117,16 @@ class _CartScreenState extends State<CartScreen> {
     return GestureDetector(
       onTap: () => setState(() => _paymentMethod = index),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.04), borderRadius: BorderRadius.circular(14), border: Border.all(color: selected ? AppColors.primary : Colors.white12)),
-        child: Row(children: [
-          Container(width: 36, height: 36, decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)), child: Icon(icon, color: AppColors.primary, size: 18)),
-          const SizedBox(width: 12),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13)), Text(sub, style: const TextStyle(color: Colors.white54, fontSize: 11))])),
-          Icon(selected ? Icons.radio_button_checked : Icons.radio_button_off, color: selected ? AppColors.primary : Colors.white24),
-        ]),
+        child: Row(
+          children: [
+            Radio<int>(value: index, activeColor: AppColors.primary),
+            Container(width: 36, height: 36, decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)), child: Icon(icon, color: AppColors.primary, size: 18)),
+            const SizedBox(width: 12),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13)), Text(sub, style: const TextStyle(color: Colors.white54, fontSize: 11))])),
+          ],
+        ),
       ),
     );
   }

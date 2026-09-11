@@ -25,6 +25,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     6,
     (_) => TextEditingController(),
   );
+  final List<FocusNode> _otpFocusNodes = List.generate(6, (_) => FocusNode());
   Timer? _resendTimer;
   int _resendCountdown = 30;
 
@@ -37,6 +38,22 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     _dob = currentUser.dob;
     _nameController.addListener(_markDirty);
     _cityController.addListener(_markDirty);
+    _newMobileController.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _resendTimer?.cancel();
+    for (var c in _otpControllers) {
+      c.dispose();
+    }
+    for (var f in _otpFocusNodes) {
+      f.dispose();
+    }
+    _nameController.dispose();
+    _cityController.dispose();
+    _newMobileController.dispose();
+    super.dispose();
   }
 
   void _markDirty() {
@@ -53,6 +70,15 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         t.cancel();
       }
     });
+  }
+
+  void _onOtpDigitChanged(int index, String value) {
+    if (value.length == 1 && index < 5) {
+      _otpFocusNodes[index + 1].requestFocus();
+    }
+    if (value.isEmpty && index > 0) {
+      _otpFocusNodes[index - 1].requestFocus();
+    }
   }
 
   Future<void> _pickDob() async {
@@ -359,6 +385,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   height: 48,
                   child: TextField(
                     controller: _otpControllers[i],
+                    focusNode: _otpFocusNodes[i],
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.center,
                     maxLength: 1,
@@ -375,6 +402,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                         borderSide: BorderSide.none,
                       ),
                     ),
+                    onChanged: (v) => _onOtpDigitChanged(i, v),
                   ),
                 ),
               ),

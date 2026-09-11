@@ -6,7 +6,8 @@ import '../../widgets/home/home_kpi_square.dart';
 import '../../widgets/home/chant_carousel.dart';
 import '../../data/home/home_data.dart';
 import '../../data/audio/audio_data.dart';
-import '../audio/audio_player_screen.dart';
+import '../../services/audio_controller.dart';
+import '../../widgets/common/nav_constants.dart';
 
 class HomeScreen extends StatelessWidget {
   final VoidCallback? onBookPooja;
@@ -68,7 +69,7 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: AppColors.surfaceContainer,
         onRefresh: () async => Future.delayed(const Duration(seconds: 1)),
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 110),
+                    padding: EdgeInsets.fromLTRB(20, 16, 20, tabBottomPadding(context)),
           children: [
             HeroPanchangamCard(data: todayPanchangam, onTap: onPanchangam ?? () {}),
             const SizedBox(height: 14),
@@ -77,13 +78,13 @@ class HomeScreen extends StatelessWidget {
             ChantCarousel(
               headerLabel: "Today's Focus: ${todaysDeities.deities.join(' & ')}",
               tracks: todaysFocus,
-              onTap: (t) => Navigator.of(context).push(MaterialPageRoute(builder: (_) => AudioPlayerScreen(track: t))),
+                            onTap: (t) => AudioControllerScope.of(context).playTrack(t),
             ),
             const SizedBox(height: 24),
             ChantCarousel(
               headerLabel: 'Picked For You',
               tracks: pickedForYou,
-              onTap: (t) => Navigator.of(context).push(MaterialPageRoute(builder: (_) => AudioPlayerScreen(track: t))),
+              onTap: (t) => AudioControllerScope.of(context).playTrack(t),
             ),
             const SizedBox(height: 24),
             GlassPanelGold(

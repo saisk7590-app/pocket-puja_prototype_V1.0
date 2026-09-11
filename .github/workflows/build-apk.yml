@@ -1,0 +1,40 @@
+name: Build APK
+
+# Manual only — trigger from the Actions tab using the "Run workflow" button.
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.35.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate app icons
+        run: flutter pub run flutter_launcher_icons
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Rename APK with app name + version
+        run: |
+          mkdir -p release
+          cp build/app/outputs/flutter-apk/app-release.apk "release/PocketPuja-v${{ github.run_number }}.apk"
+
+      - name: Upload APK as build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PocketPuja-APK
+          path: release/*.apk
+          retention-days: 30

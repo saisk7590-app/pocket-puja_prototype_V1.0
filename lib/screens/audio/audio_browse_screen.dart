@@ -6,9 +6,12 @@ import '../../widgets/audio/podcast_row.dart';
 import '../../widgets/audio/usage_banner.dart';
 import '../../widgets/subscription/block_modal.dart';
 import '../../data/audio/audio_data.dart';
-import 'audio_player_screen.dart';
+import '../../services/audio_controller.dart';
 import 'podcast_detail_screen.dart';
 import '../subscription/subscription_screen.dart';
+import '../../widgets/common/nav_constants.dart';
+import 'favorites_screen.dart';
+import 'playlists_screen.dart';
 
 class AudioBrowseScreen extends StatefulWidget {
   const AudioBrowseScreen({super.key});
@@ -34,13 +37,11 @@ class _AudioBrowseScreenState extends State<AudioBrowseScreen> {
 
   // Block only fires on the NEXT play attempt once 100% is reached —
   // never mid-track. Today's Mantra always bypasses this entirely.
-  void _openTrack(TrackData track) {
+    void _openTrack(TrackData track) {
     if (currentUsage.isBlocked) {
       showUsageBlockModal(context);
     } else {
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => AudioPlayerScreen(track: track)),
-      );
+      AudioControllerScope.of(context).playTrack(track);
     }
   }
 
@@ -88,7 +89,7 @@ class _AudioBrowseScreenState extends State<AudioBrowseScreen> {
       showBack: false,
       title: 'Music',
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 110),
+                padding: EdgeInsets.fromLTRB(20, 16, 20, tabBottomPadding(context)),
         children: [
           Text(
             'ఆధ్యాత్మిక భాండాగారం',
@@ -102,7 +103,35 @@ class _AudioBrowseScreenState extends State<AudioBrowseScreen> {
             style: TextStyle(color: Colors.white60, fontSize: 13),
           ),
           const SizedBox(height: 14),
-          UsageBanner(usage: currentUsage, onUpgrade: _openUpgrade),
+                    UsageBanner(usage: currentUsage, onUpgrade: _openUpgrade),
+          const SizedBox(height: 14),
+          Row(children: [
+            Expanded(
+              child: GlassPanel(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                borderRadius: 14,
+                onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const FavoritesScreen())),
+                child: const Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Icon(Icons.favorite, color: AppColors.primary, size: 16),
+                  SizedBox(width: 8),
+                  Text('Favorites', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12)),
+                ]),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: GlassPanel(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                borderRadius: 14,
+                onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PlaylistsScreen())),
+                child: const Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Icon(Icons.queue_music, color: AppColors.primary, size: 16),
+                  SizedBox(width: 8),
+                  Text('Playlists', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12)),
+                ]),
+              ),
+            ),
+          ]),
           const SizedBox(height: 14),
 
           // Always-free floor content — plays even at 100% block.

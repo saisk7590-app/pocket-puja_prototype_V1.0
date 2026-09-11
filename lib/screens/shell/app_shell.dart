@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common/glass.dart';
-import '../../widgets/audio/mini_player.dart';
-import '../../data/audio/audio_data.dart';
+import '../../widgets/audio/player_overlay.dart';
+import '../../services/audio_controller.dart';
 import '../home/home_screen.dart';
 import '../audio/audio_browse_screen.dart';
 import '../booking/booking_list_screen.dart';
@@ -20,7 +20,6 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   int _currentIndex = 0;
-  TrackData? _nowPlaying = tracks.first; // mock: something is "playing" globally
 
   void _goToTab(int i) => setState(() => _currentIndex = i);
   void _openNotifications() => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const NotificationCentreScreen()));
@@ -36,20 +35,22 @@ class _AppShellState extends State<AppShell> {
       const CalendarScreen(),
     ];
 
-    return Scaffold(
+        return Scaffold(
       backgroundColor: AppColors.background,
-      extendBody: true,
-      body: IndexedStack(index: _currentIndex, children: pages),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
+      body: Stack(
         children: [
-          // Global mini-player — floats above every tab, Spotify-style.
-          MiniPlayer(nowPlaying: _nowPlaying, onDismiss: () => setState(() => _nowPlaying = null)),
-          GlassBottomNav(
-            currentIndex: _currentIndex,
-            onTap: _goToTab,
-            icons: const [Icons.home_rounded, Icons.headphones, Icons.event_available, Icons.shopping_bag, Icons.calendar_month],
+          IndexedStack(index: _currentIndex, children: pages),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: GlassBottomNav(
+              currentIndex: _currentIndex,
+              onTap: _goToTab,
+              icons: const [Icons.home_rounded, Icons.headphones, Icons.event_available, Icons.shopping_bag, Icons.calendar_month],
+            ),
           ),
+          const PlayerOverlay(),
         ],
       ),
     );
