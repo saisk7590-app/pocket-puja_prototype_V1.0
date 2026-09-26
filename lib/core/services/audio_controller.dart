@@ -81,6 +81,11 @@ class AudioController extends ChangeNotifier {
 
 class AudioControllerScope extends InheritedNotifier<AudioController> {
   const AudioControllerScope({super.key, required AudioController controller, required super.child}) : super(notifier: controller);
+  static AudioController? maybeOf(BuildContext context) {
+    final scope = context.dependOnInheritedWidgetOfExactType<AudioControllerScope>();
+    return scope?.notifier;
+  }
+
   static AudioController of(BuildContext context) {
     final scope = context.dependOnInheritedWidgetOfExactType<AudioControllerScope>();
     assert(scope != null, 'No AudioControllerScope found in context');

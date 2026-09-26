@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_puja/core/models/user_account.dart';
+import 'package:pocket_puja/core/services/poojari_controller.dart';
 import 'package:pocket_puja/core/services/session_service.dart';
 import 'package:pocket_puja/core/theme/app_theme.dart';
 import 'package:pocket_puja/core/widgets/glass.dart';
 import 'package:pocket_puja/core/widgets/verification_banner.dart';
 import 'package:pocket_puja/poojari/screens/dashboard/poojari_dashboard_screen.dart';
-import 'package:pocket_puja/poojari/screens/under_construction_screen.dart';
+import 'package:pocket_puja/poojari/screens/earnings/poojari_earnings_screen.dart';
+import 'package:pocket_puja/poojari/screens/profile/poojari_profile_screen.dart';
+import 'package:pocket_puja/poojari/screens/requests/assigned_poojas_screen.dart';
+import 'package:pocket_puja/poojari/screens/schedule/poojari_schedule_screen.dart';
 
 class PoojariShell extends StatefulWidget {
   final VoidCallback onLogout;
@@ -32,35 +36,25 @@ class _PoojariShellState extends State<PoojariShell> {
     final user = session.currentUser;
     final showVerificationBanner =
         user == null || user.poojariStatus != PoojariVerificationStatus.verified;
+    final controller =
+        PoojariControllerScope.maybeOf(context) ?? PoojariController.instance;
 
     final pages = [
       PoojariDashboardScreen(
         onSwitchToCustomer: widget.onSwitchToCustomer,
       ),
-      PoojariUnderConstructionScreen(
-        title: 'Booking Requests',
-        subtitle:
-            'Incoming devotee puja requests, samagri verification, and accept/decline flows.',
-        icon: Icons.assignment_turned_in_rounded,
+      // BLOCK 6: Assigned Poojas Tab
+      AssignedPoojasScreen(
         onSwitchToCustomer: widget.onSwitchToCustomer,
       ),
-      PoojariUnderConstructionScreen(
-        title: 'Puja Schedule & Calendar',
-        subtitle:
-            'Daily & monthly ritual schedule, panchangam alignment, and devotee locations.',
-        icon: Icons.calendar_month_rounded,
+      PoojariScheduleScreen(
         onSwitchToCustomer: widget.onSwitchToCustomer,
       ),
-      PoojariUnderConstructionScreen(
-        title: 'Earnings & Dakshina',
-        subtitle: 'Dakshina payouts, transaction history, and settlement ledger.',
-        icon: Icons.account_balance_wallet_rounded,
+      PoojariEarningsScreen(
         onSwitchToCustomer: widget.onSwitchToCustomer,
       ),
-      PoojariUnderConstructionScreen(
-        title: 'Poojari Profile & Vedic Credentials',
-        subtitle: 'Veda shakha verification, temple affiliations, languages, and settings.',
-        icon: Icons.person_pin_rounded,
+      PoojariProfileScreen(
+        onLogout: widget.onLogout,
         onSwitchToCustomer: widget.onSwitchToCustomer,
       ),
     ];
@@ -72,7 +66,7 @@ class _PoojariShellState extends State<PoojariShell> {
           // Main tab contents
           Positioned.fill(
             child: Padding(
-              padding: EdgeInsets.only(top: showVerificationBanner ? 54 : 0),
+              padding: EdgeInsets.only(top: (showVerificationBanner && _currentIndex != 0) ? 54 : 0),
               child: IndexedStack(
                 index: _currentIndex,
                 children: pages,
@@ -80,38 +74,44 @@ class _PoojariShellState extends State<PoojariShell> {
             ),
           ),
 
-          // Persistent Verification Banner at the top if status != verified
-          if (showVerificationBanner)
+          // Persistent Verification Banner at the top for sub-tabs if status != verified
+          // (Dashboard has its own Section 2 banner in the scrollable view)
+          if (showVerificationBanner && _currentIndex != 0)
             Positioned(
               top: 0,
               left: 0,
               right: 0,
-              child: SafeArea(
+              child: const SafeArea(
                 bottom: false,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  child: VerificationPendingBanner(
-                    message: "🕒 Verification pending — you'll be notified once approved",
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  child: VerificationPendingBanner(),
                 ),
               ),
             ),
 
-          // Bottom Nav Bar
+          // Bottom Nav Bar with BLOCK 6b reactive red badge on Assigned Poojas tab (index 1)
           Positioned(
             left: 0,
             right: 0,
             bottom: 0,
-            child: GlassBottomNav(
-              currentIndex: _currentIndex,
-              onTap: _goToTab,
-              icons: const [
-                Icons.dashboard_rounded,
-                Icons.assignment_turned_in_rounded,
-                Icons.calendar_month_rounded,
-                Icons.account_balance_wallet_rounded,
-                Icons.person_pin_rounded,
-              ],
+            child: AnimatedBuilder(
+              animation: controller,
+              builder: (context, _) {
+                final newCount = controller.newAssignmentsCount;
+                return GlassBottomNav(
+                  currentIndex: _currentIndex,
+                  onTap: _goToTab,
+                  badges: newCount > 0 ? {1: newCount} : null,
+                  icons: const [
+                    Icons.dashboard_rounded,
+                    Icons.assignment_turned_in_rounded, // Assigned Poojas tab (index 1)
+                    Icons.calendar_month_rounded,
+                    Icons.account_balance_wallet_rounded,
+                    Icons.person_pin_rounded,
+                  ],
+                );
+              },
             ),
           ),
         ],

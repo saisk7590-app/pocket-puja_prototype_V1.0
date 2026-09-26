@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_puja/core/services/audio_controller.dart';
+import 'package:pocket_puja/core/services/poojari_controller.dart';
 import 'package:pocket_puja/core/services/session_service.dart';
 import 'package:pocket_puja/core/theme/app_theme.dart';
-import 'package:pocket_puja/core/widgets/poojari_mode_badge.dart';
 import 'package:pocket_puja/customer/shell/app_shell.dart';
 import 'package:pocket_puja/poojari/shell/poojari_shell.dart';
 import 'package:pocket_puja/shared/auth/mobile_number_screen.dart';
@@ -27,9 +27,9 @@ class PocketPujaApp extends StatefulWidget {
 class _PocketPujaAppState extends State<PocketPujaApp> {
   final _navigatorKey = GlobalKey<NavigatorState>();
   final AudioController _audioController = AudioController();
+  final PoojariController _poojariController = PoojariController();
   final SessionService _sessionService = SessionService.instance;
 
-  late AppRole _currentRole;
   bool _isLoading = false;
   String? _error;
   String _mobile = '';
@@ -37,7 +37,6 @@ class _PocketPujaAppState extends State<PocketPujaApp> {
   @override
   void initState() {
     super.initState();
-    _currentRole = widget.initialRole;
     _sessionService.addListener(_onSessionChanged);
   }
 
@@ -49,20 +48,12 @@ class _PocketPujaAppState extends State<PocketPujaApp> {
 
   void _onSessionChanged() {
     if (mounted) {
-      setState(() {
-        if (_sessionService.currentUser != null) {
-          _currentRole = _sessionService.currentRole;
-        }
-      });
+      setState(() {});
     }
   }
 
   void _switchRole(AppRole newRole) {
-    setState(() {
-      _currentRole = newRole;
-    });
     _sessionService.switchRole(newRole);
-
     if (_sessionService.isLoggedIn) {
       _navigatorKey.currentState?.pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => _buildHomeScreen()),
@@ -71,9 +62,6 @@ class _PocketPujaAppState extends State<PocketPujaApp> {
     }
   }
 
-  void _toggleRole() {
-    _switchRole(_currentRole == AppRole.customer ? AppRole.poojari : AppRole.customer);
-  }
 
   Future<void> _handleSendOTP(String mobile) async {
     setState(() {
@@ -92,9 +80,6 @@ class _PocketPujaAppState extends State<PocketPujaApp> {
         builder: (_) => OTPVerificationScreen(
           mobile: _mobile,
           onExistingUserSuccess: (user) {
-            setState(() {
-              _currentRole = user.role;
-            });
             _navigatorKey.currentState!.pushAndRemoveUntil(
               MaterialPageRoute(builder: (_) => _buildHomeScreen()),
               (route) => false,
@@ -118,7 +103,8 @@ class _PocketPujaAppState extends State<PocketPujaApp> {
   }
 
   Widget _buildHomeScreen() {
-    if (_currentRole == AppRole.poojari) {
+    final role = _sessionService.currentRole;
+    if (role == AppRole.poojari) {
       return PoojariShell(
         onLogout: _handleLogout,
         onSwitchToCustomer: () => _switchRole(AppRole.customer),
@@ -131,24 +117,10 @@ class _PocketPujaAppState extends State<PocketPujaApp> {
   }
 
   Widget _buildLoginScreen() {
-    return Stack(
-      children: [
-        MobileNumberScreen(
-          isLoading: _isLoading,
-          error: _error,
-          onSendOTP: _handleSendOTP,
-        ),
-        Positioned(
-          top: 48,
-          right: 20,
-          child: SafeArea(
-            child: PoojariModeBadge(
-              isPoojari: _currentRole == AppRole.poojari,
-              onToggle: _toggleRole,
-            ),
-          ),
-        ),
-      ],
+    return MobileNumberScreen(
+      isLoading: _isLoading,
+      error: _error,
+      onSendOTP: _handleSendOTP,
     );
   }
 
@@ -158,12 +130,15 @@ class _PocketPujaAppState extends State<PocketPujaApp> {
       sessionService: _sessionService,
       child: AudioControllerScope(
         controller: _audioController,
-        child: MaterialApp(
-          title: 'Pocket Puja',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.theme,
-          navigatorKey: _navigatorKey,
-          home: _sessionService.isLoggedIn ? _buildHomeScreen() : _buildLoginScreen(),
+        child: PoojariControllerScope(
+          controller: _poojariController,
+          child: MaterialApp(
+            title: 'Pocket Puja',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.theme,
+            navigatorKey: _navigatorKey,
+            home: _sessionService.isLoggedIn ? _buildHomeScreen() : _buildLoginScreen(),
+          ),
         ),
       ),
     );

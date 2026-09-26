@@ -239,12 +239,14 @@ class GlassBottomNav extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
   final List<IconData> icons;
+  final Map<int, int>? badges;
 
   const GlassBottomNav({
     super.key,
     required this.currentIndex,
     required this.onTap,
     required this.icons,
+    this.badges,
   });
 
   @override
@@ -272,26 +274,55 @@ class GlassBottomNav extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: List.generate(icons.length, (i) {
                 final selected = i == currentIndex;
+                final badgeCount = badges?[i] ?? 0;
                 return GestureDetector(
                   onTap: () => onTap(i),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.all(10),
-                    child: Icon(
-                      icons[i],
-                      color: selected
-                          ? AppColors.primary
-                          : AppColors.onSurfaceVariant.withValues(alpha: 0.7),
-                      size: selected ? 26 : 24,
-                      shadows: selected
-                          ? [
-                              Shadow(
-                                color: AppColors.primary.withValues(alpha: 0.8),
-                                blurRadius: 8,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.all(10),
+                        child: Icon(
+                          icons[i],
+                          color: selected
+                              ? AppColors.primary
+                              : AppColors.onSurfaceVariant.withValues(alpha: 0.7),
+                          size: selected ? 26 : 24,
+                          shadows: selected
+                              ? [
+                                  Shadow(
+                                    color: AppColors.primary.withValues(alpha: 0.8),
+                                    blurRadius: 8,
+                                  ),
+                                ]
+                              : null,
+                        ),
+                      ),
+                      if (badgeCount > 0)
+                        Positioned(
+                          right: 2,
+                          top: 2,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                            constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFE05353),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: Text(
+                                '$badgeCount',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                            ]
-                          : null,
-                    ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 );
               }),

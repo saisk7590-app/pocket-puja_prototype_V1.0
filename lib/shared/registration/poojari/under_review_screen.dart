@@ -6,6 +6,7 @@ import 'package:pocket_puja/core/theme/app_theme.dart';
 import 'package:pocket_puja/core/widgets/glass.dart';
 import 'package:pocket_puja/customer/shell/app_shell.dart';
 import 'package:pocket_puja/poojari/shell/poojari_shell.dart';
+import 'package:pocket_puja/shared/auth/mobile_number_screen.dart';
 
 /// Screen 6: Under Review Confirmation Screen
 /// Simple confirmation screen: checkmark/hourglass icon,
@@ -28,7 +29,10 @@ class UnderReviewScreen extends StatelessWidget {
         builder: (_) => PoojariShell(
           onLogout: () {
             SessionService.instance.logout();
-            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const MobileNumberScreen()),
+              (route) => false,
+            );
           },
           onSwitchToCustomer: () {
             SessionService.instance.switchRole(AppRole.customer);
@@ -37,7 +41,10 @@ class UnderReviewScreen extends StatelessWidget {
                 builder: (_) => AppShell(
                   onLogout: () {
                     SessionService.instance.logout();
-                    Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (_) => const MobileNumberScreen()),
+                      (route) => false,
+                    );
                   },
                 ),
               ),

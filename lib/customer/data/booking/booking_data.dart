@@ -42,6 +42,28 @@ class BookingData {
   final int? myRating; // set only when status == RATED
   final String? cancelReason; // set only when status == CANCELLED
   const BookingData(this.ref, this.poojaName, this.status, this.date, this.feePaise, {this.pandit, this.myRating, this.cancelReason});
+
+  BookingData copyWith({
+    String? ref,
+    String? poojaName,
+    String? status,
+    String? date,
+    int? feePaise,
+    PanditData? pandit,
+    int? myRating,
+    String? cancelReason,
+  }) {
+    return BookingData(
+      ref ?? this.ref,
+      poojaName ?? this.poojaName,
+      status ?? this.status,
+      date ?? this.date,
+      feePaise ?? this.feePaise,
+      pandit: pandit ?? this.pandit,
+      myRating: myRating ?? this.myRating,
+      cancelReason: cancelReason ?? this.cancelReason,
+    );
+  }
 }
 
 const activeBookings = [

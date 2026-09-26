@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:pocket_puja/app.dart';
 import 'package:pocket_puja/core/models/user_account.dart';
 import 'package:pocket_puja/core/services/session_service.dart';
 import 'package:pocket_puja/core/theme/app_theme.dart';
 import 'package:pocket_puja/core/widgets/glass.dart';
 import 'package:pocket_puja/customer/shell/app_shell.dart';
 import 'package:pocket_puja/poojari/shell/poojari_shell.dart';
+import 'package:pocket_puja/shared/auth/mobile_number_screen.dart';
 import 'package:pocket_puja/shared/registration/name_screen.dart';
 
 /// Screen 2: OTP Verification
@@ -85,6 +87,15 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
 
   String get _currentOtp => _controllers.map((c) => c.text).join();
 
+  void _fillDummyOtp() {
+    const dummy = '123456';
+    for (int i = 0; i < 6; i++) {
+      _controllers[i].text = dummy[i];
+    }
+    setState(() => _internalError = null);
+    _handleVerify();
+  }
+
   void _onOTPChanged(int index, String value) {
     if (value.length == 1 && index < 5) {
       _focusNodes[index + 1].requestFocus();
@@ -117,62 +128,68 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     }
 
     // Default built-in verification and login resolution flow:
-    await Future.delayed(const Duration(milliseconds: 600));
+    await Future.delayed(const Duration(milliseconds: 500));
     if (!mounted) return;
 
     final session = SessionService.instance;
-    final destination = session.authenticateAndResolveRoute(widget.mobile);
+    final existingAccount = session.lookupAccountByMobile(widget.mobile);
 
     setState(() => _internalLoading = false);
 
-    switch (destination) {
-      case AuthRouteDestination.customerHome:
-      case AuthRouteDestination.poojariDashboard:
-        final user = session.currentUser;
-        if (widget.onExistingUserSuccess != null && user != null) {
-          widget.onExistingUserSuccess!(user);
-        } else {
-          // Route straight to Customer Home or Poojari Dashboard
-          if (destination == AuthRouteDestination.customerHome) {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                builder: (_) => AppShell(
-                  onLogout: () {
-                    session.logout();
-                    Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-                  },
-                ),
-              ),
-              (route) => false,
-            );
-          } else {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                builder: (_) => PoojariShell(
-                  onLogout: () {
-                    session.logout();
-                    Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-                  },
-                ),
-              ),
-              (route) => false,
-            );
-          }
-        }
-        break;
-
-      case AuthRouteDestination.registrationName:
-        // New Number -> Proceed to Step 3: NameScreen
-        if (widget.onNewUserSuccess != null) {
-          widget.onNewUserSuccess!(widget.mobile);
-        } else {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => NameScreen(mobile: widget.mobile),
+    if (existingAccount == null) {
+      // Brand new number → registration continues into NameScreen
+      if (widget.onNewUserSuccess != null) {
+        widget.onNewUserSuccess!(widget.mobile);
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => NameScreen(mobile: widget.mobile),
+          ),
+        );
+      }
+    } else if (existingAccount.role == AppRole.customer) {
+      session.authenticateAndResolveRoute(widget.mobile);
+      if (widget.onExistingUserSuccess != null) {
+        widget.onExistingUserSuccess!(existingAccount);
+      } else {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (_) => AppShell(
+              onLogout: () {
+                session.logout();
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const MobileNumberScreen()),
+                  (route) => false,
+                );
+              },
             ),
-          );
-        }
-        break;
+          ),
+          (route) => false,
+        );
+      }
+    } else if (existingAccount.role == AppRole.poojari) {
+      session.authenticateAndResolveRoute(widget.mobile);
+      if (widget.onExistingUserSuccess != null) {
+        widget.onExistingUserSuccess!(existingAccount);
+      } else {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (_) => PoojariShell(
+              onLogout: () {
+                session.logout();
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const MobileNumberScreen()),
+                  (route) => false,
+                );
+              },
+              onSwitchToCustomer: () {
+                session.switchRole(AppRole.customer);
+              },
+            ),
+          ),
+          (route) => false,
+        );
+      }
     }
   }
 
@@ -259,7 +276,37 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   'Enter the 6-digit code sent to $masked',
                   style: const TextStyle(color: Colors.white70, fontSize: 14),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 24),
+
+                // Quick Prototype One-Tap Fill Button
+                GestureDetector(
+                  onTap: _fillDummyOtp,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.16),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.primary.withValues(alpha: 0.4)),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.bolt_rounded, size: 16, color: AppColors.primary),
+                        SizedBox(width: 6),
+                        Text(
+                          'Prototype Auto-Fill: 123456',
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.4,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
 
                 // OTP Card
                 GlassPanel(
@@ -401,6 +448,19 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                         onTap: _handleVerify,
                       ),
                     ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+                GestureDetector(
+                  onTap: () => Navigator.of(context).maybePop(),
+                  child: const Text(
+                    'Wrong number? Change mobile number',
+                    style: TextStyle(
+                      color: Colors.white54,
+                      fontSize: 13,
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
                 ),
               ],

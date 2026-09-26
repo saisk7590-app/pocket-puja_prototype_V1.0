@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_puja/core/theme/app_theme.dart';
 import 'package:pocket_puja/core/widgets/glass.dart';
-import 'package:pocket_puja/core/widgets/network_image_placeholder.dart';
+import 'package:pocket_puja/customer/widgets/booking/pooja_item_row.dart';
 import 'package:pocket_puja/customer/data/booking/booking_data.dart';
 import 'package:pocket_puja/customer/screens/shop/shop_screen.dart';
 
@@ -35,31 +35,16 @@ class _ItemsChecklistScreenState extends State<ItemsChecklistScreen> {
           const SizedBox(height: 20),
           ...poojaItems.map((item) => Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: GlassPanel(
-                  padding: const EdgeInsets.all(12),
-                  borderRadius: 18,
-                  child: Row(children: [
-                    Opacity(
-                      opacity: item.inShop ? 1.0 : 0.4,
-                      child: ClipRRect(borderRadius: BorderRadius.circular(12), child: NetworkImageWithPlaceholder(imageUrl: 'https://picsum.photos/seed/${item.seed}/120', width: 52, height: 52)),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text('${item.nameTe} (${item.nameEn})', style: TextStyle(color: item.inShop ? Colors.white : Colors.white38, fontSize: 14, fontWeight: FontWeight.w600)),
-                        const SizedBox(height: 2),
-                        Text(item.inShop ? item.desc : 'Not available in Pocket Puja Shop — please arrange this yourself', style: TextStyle(color: item.inShop ? Colors.white54 : Colors.white24, fontSize: 11)),
-                        if (item.inShop && item.pricePaise != null) Text('₹${(item.pricePaise! / 100).toStringAsFixed(0)}', style: const TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.w700)),
-                      ]),
-                    ),
-                    if (item.inShop)
-                      IconButton(
-                        icon: Icon(_added.contains(item.nameEn) ? Icons.check_circle : Icons.add_circle_outline, color: AppColors.primary),
-                        onPressed: () => setState(() => _added.contains(item.nameEn) ? _added.remove(item.nameEn) : _added.add(item.nameEn)),
-                      )
-                    else
-                      const Padding(padding: EdgeInsets.only(right: 8), child: Icon(Icons.info_outline, color: Colors.white24, size: 18)),
-                  ]),
+                child: PoojaItemRow(
+                  title: '${item.nameTe} (${item.nameEn})',
+                  subtitle: item.inShop ? item.desc : 'Not available in Pocket Puja Shop — please arrange this yourself',
+                  pricePaise: item.pricePaise,
+                  seed: item.seed,
+                  inShop: item.inShop,
+                  isChecked: _added.contains(item.nameEn),
+                  onToggle: item.inShop
+                      ? () => setState(() => _added.contains(item.nameEn) ? _added.remove(item.nameEn) : _added.add(item.nameEn))
+                      : null,
                 ),
               )),
           const SizedBox(height: 12),

@@ -78,9 +78,12 @@ class SessionService extends ChangeNotifier {
   }
 
   static String _normalizeMobile(String mobile) {
-    String clean = mobile.replaceAll(RegExp(r'[\s\-()]'), '');
-    if (!clean.startsWith('+91') && clean.length == 10) {
-      clean = '+91$clean';
+    String clean = mobile.replaceAll(RegExp(r'[\s\-()+]'), '');
+    if (clean.startsWith('91') && clean.length == 12) {
+      clean = clean.substring(2);
+    }
+    if (clean.length > 10) {
+      clean = clean.substring(clean.length - 10);
     }
     return clean;
   }
@@ -88,22 +91,24 @@ class SessionService extends ChangeNotifier {
   /// Checks if a mobile number is already registered
   bool isExistingUser(String mobile) {
     final norm = _normalizeMobile(mobile);
-    return _registeredAccounts.containsKey(norm);
+    return _registeredAccounts.containsKey(norm) || _registeredAccounts.containsKey('+91$norm');
   }
 
-  /// Fetches an existing user account if registered
+  /// Single source of truth: Fetches an existing user account if registered
   UserAccount? getUserByMobile(String mobile) {
     final norm = _normalizeMobile(mobile);
-    return _registeredAccounts[norm];
+    return _registeredAccounts[norm] ?? _registeredAccounts['+91$norm'];
   }
+
+  /// Alias matching Block 5 specification: lookupAccountByMobile
+  UserAccount? lookupAccountByMobile(String mobile) => getUserByMobile(mobile);
 
   /// Single branch point after OTP success (BLOCK 2 Login Routing Logic):
   /// - Existing account with role == 'customer' -> sets session & returns [customerHome]
   /// - Existing account with role == 'poojari'  -> sets session & returns [poojariDashboard]
   /// - New number                             -> returns [registrationName]
   AuthRouteDestination authenticateAndResolveRoute(String mobile) {
-    final norm = _normalizeMobile(mobile);
-    final existingUser = _registeredAccounts[norm];
+    final existingUser = getUserByMobile(mobile);
 
     if (existingUser != null) {
       _currentUser = existingUser;
@@ -137,12 +142,14 @@ class SessionService extends ChangeNotifier {
   UserAccount registerCustomer({
     required String mobile,
     required String fullName,
+    CustomerProfile? profile,
   }) {
     final norm = _normalizeMobile(mobile);
     final user = UserAccount(
       mobile: norm,
       fullName: fullName.trim(),
       role: AppRole.customer,
+      customerProfile: profile,
     );
     _registeredAccounts[norm] = user;
     _currentUser = user;

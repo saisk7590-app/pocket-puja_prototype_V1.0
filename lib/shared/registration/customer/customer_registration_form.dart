@@ -4,6 +4,8 @@ import 'package:pocket_puja/core/services/session_service.dart';
 import 'package:pocket_puja/core/theme/app_theme.dart';
 import 'package:pocket_puja/core/widgets/glass.dart';
 import 'package:pocket_puja/customer/shell/app_shell.dart';
+import 'package:pocket_puja/shared/auth/auth_footer_link.dart';
+import 'package:pocket_puja/shared/auth/mobile_number_screen.dart';
 
 /// Customer / Devotee Registration Form
 /// Collects details matching the inner customer profile (Name, City, DOB, Rashi, Gothram)
@@ -98,18 +100,20 @@ class _CustomerRegistrationFormState extends State<CustomerRegistrationForm> {
     }
   }
 
-  void _handleSubmit() {
-    final name = _nameController.text.trim();
-    final city = _cityController.text.trim();
+  void _quickFillDemoDevotee() {
+    setState(() {
+      _nameController.text = 'Sai Kiran';
+      _cityController.text = 'Hyderabad';
+      _selectedDob = '15 Aug 1995';
+      _selectedRashi = 'Simha (సింహ)';
+      _gothramController.text = 'Kashyapa (కాశ్యప)';
+      _errorMessage = null;
+    });
+  }
 
-    if (name.isEmpty) {
-      setState(() => _errorMessage = 'Please enter your full name');
-      return;
-    }
-    if (city.isEmpty) {
-      setState(() => _errorMessage = 'Please enter your city');
-      return;
-    }
+  void _handleSubmit() {
+    final name = _nameController.text.trim().isEmpty ? 'Sai Kiran' : _nameController.text.trim();
+    final city = _cityController.text.trim().isEmpty ? 'Hyderabad' : _cityController.text.trim();
 
     setState(() {
       _errorMessage = null;
@@ -125,18 +129,12 @@ class _CustomerRegistrationFormState extends State<CustomerRegistrationForm> {
           : _gothramController.text.trim(),
     );
 
-    // Register customer account in session
+    // Register customer account in session with profile
     SessionService.instance.registerCustomer(
       mobile: widget.mobile,
       fullName: name,
+      profile: customerProfile,
     );
-
-    // Update with detailed customer profile
-    final current = SessionService.instance.currentUser;
-    if (current != null) {
-      final updated = current.copyWith(customerProfile: customerProfile);
-      SessionService.instance.loginWithMobile(widget.mobile);
-    }
 
     // Direct routing to Customer Dashboard (AppShell)
     Navigator.of(context).pushAndRemoveUntil(
@@ -144,7 +142,10 @@ class _CustomerRegistrationFormState extends State<CustomerRegistrationForm> {
         builder: (_) => AppShell(
           onLogout: () {
             SessionService.instance.logout();
-            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const MobileNumberScreen()),
+              (route) => false,
+            );
           },
         ),
       ),
@@ -216,7 +217,56 @@ class _CustomerRegistrationFormState extends State<CustomerRegistrationForm> {
                   height: 1.4,
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+
+              // Prototype Quick Fill Banner
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.primary.withValues(alpha: 0.35)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.touch_app_rounded, size: 18, color: AppColors.primary),
+                    const SizedBox(width: 10),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'PROTOTYPE QUICK FILL',
+                            style: TextStyle(
+                              color: AppColors.primaryFixed,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 0.8,
+                            ),
+                          ),
+                          Text(
+                            'Tap to autofill demo Devotee profile',
+                            style: TextStyle(color: Colors.white70, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: _quickFillDemoDevotee,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: AppColors.onPrimary,
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                      child: const Text('Autofill', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
 
               if (_errorMessage != null) ...[
                 Container(
@@ -525,30 +575,12 @@ class _CustomerRegistrationFormState extends State<CustomerRegistrationForm> {
               const SizedBox(height: 20),
 
               // Hyperlink to Login Screen
-              Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'Already have an account? ',
-                      style: TextStyle(color: Colors.white60, fontSize: 13),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-                      },
-                      child: const Text(
-                        'Sign In',
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 13,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              AuthFooterLink.login(
+                onTap: () {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const MobileNumberScreen()),
+                  );
+                },
               ),
               const SizedBox(height: 16),
             ],

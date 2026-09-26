@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_puja/core/theme/app_theme.dart';
 import 'package:pocket_puja/core/widgets/glass.dart';
+import 'package:pocket_puja/shared/auth/auth_footer_link.dart';
+import 'package:pocket_puja/shared/auth/mobile_number_screen.dart';
 import 'package:pocket_puja/shared/registration/role_picker_screen.dart';
 
 /// Screen 3: Name Screen
@@ -219,14 +221,25 @@ class _NameScreenState extends State<NameScreen> {
 
               const SizedBox(height: 24),
               Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
+                child: Column(
                   children: [
-                    const Icon(Icons.phone_android_rounded, size: 14, color: Colors.white38),
-                    const SizedBox(width: 6),
-                    Text(
-                      'Registered mobile: ${widget.mobile}',
-                      style: const TextStyle(color: Colors.white38, fontSize: 12),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.phone_android_rounded, size: 14, color: Colors.white38),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Registered mobile: ${widget.mobile}',
+                          style: const TextStyle(color: Colors.white38, fontSize: 12),
+                        ),
+                      ],
+                    ),
+                    AuthFooterLink.login(
+                      onTap: () {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (_) => const MobileNumberScreen()),
+                        );
+                      },
                     ),
                   ],
                 ),

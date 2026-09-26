@@ -14,8 +14,8 @@ const double kFabHeight = 56;          // Booking's FloatingActionButton.extende
 /// bar, and ONLY adds mini-player clearance if a track is actually
 /// playing right now — no static leftover gap when nothing's playing.
 double tabBottomPadding(BuildContext context) {
-  final controller = AudioControllerScope.of(context);
-  final hasMiniPlayer = controller.currentTrack != null;
+  final controller = AudioControllerScope.maybeOf(context);
+  final hasMiniPlayer = controller?.currentTrack != null;
   return kNavBarHeight + (hasMiniPlayer ? kMiniPlayerHeight + kFloatingGap : 0) + 16;
 }
 

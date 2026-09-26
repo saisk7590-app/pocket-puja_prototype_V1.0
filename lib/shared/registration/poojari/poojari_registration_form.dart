@@ -3,12 +3,15 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pocket_puja/app.dart';
 import 'package:pocket_puja/core/models/user_account.dart';
 import 'package:pocket_puja/core/services/session_service.dart';
 import 'package:pocket_puja/core/theme/app_theme.dart';
 import 'package:pocket_puja/core/widgets/glass.dart';
 import 'package:pocket_puja/customer/data/booking/booking_data.dart';
-import 'package:pocket_puja/shared/registration/poojari/under_review_screen.dart';
+import 'package:pocket_puja/poojari/shell/poojari_shell.dart';
+import 'package:pocket_puja/shared/auth/auth_footer_link.dart';
+import 'package:pocket_puja/shared/auth/mobile_number_screen.dart';
 
 /// Screen 5: Poojari Registration Form
 /// Comprehensive Vedic profile & credential collection.
@@ -95,13 +98,13 @@ class _PoojariRegistrationFormState extends State<PoojariRegistrationForm> {
 
   Future<void> _pickCertificate() async {
     try {
-      final result = await FilePickerPlatform.instance.pickFiles(
+      final FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'],
       );
 
-      if (result.isNotEmpty) {
-        final file = result.first;
+      if (result != null && result.files.isNotEmpty) {
+        final file = result.files.first;
         setState(() {
           _pickedCertificateName = file.name;
           _pickedCertificatePath = file.path;
@@ -125,51 +128,37 @@ class _PoojariRegistrationFormState extends State<PoojariRegistrationForm> {
     }
   }
 
+  void _quickFillDemoPandit() {
+    setState(() {
+      _cityController.text = 'Hyderabad';
+      _experienceController.text = '14';
+      _trainingController.text = 'Trained under Sri Sitarama Shastri, Kanchi Kamakoti Peetham';
+      _selectedRadius = '15km';
+      _selectedSpecializations.addAll(['Ganapathi Homam', 'Satyanarayana Vratam', 'Gruhapravesham']);
+      _selectedLanguages.addAll(['Telugu', 'Sanskrit', 'English']);
+      _pickedCertificateName = 'vedic_pravesha_certificate.pdf';
+      _errorMessage = null;
+    });
+  }
+
   void _handleSubmit() {
-    // 1. Profile photo validation
-    if (_pickedPhoto == null && _pickedPhotoBytes == null) {
-      setState(() => _errorMessage = 'Please upload a profile photo');
-      _scrollToTop();
-      return;
-    }
-
-    // 2. City validation
+    // For prototype testing: auto-fill reasonable defaults if omitted
     if (_cityController.text.trim().isEmpty) {
-      setState(() => _errorMessage = 'Please enter your City / Service Area');
-      return;
+      _cityController.text = 'Hyderabad';
     }
-
-    // 3. Radius validation
-    if (_selectedRadius == null) {
-      setState(() => _errorMessage = 'Please select a service radius');
-      return;
+    if (_experienceController.text.trim().isEmpty) {
+      _experienceController.text = '10';
     }
-
-    // 4. Experience validation
-    final expText = _experienceController.text.trim();
-    final expNum = int.tryParse(expText);
-    if (expText.isEmpty || expNum == null || expNum < 0) {
-      setState(() => _errorMessage = 'Please enter valid years of experience');
-      return;
-    }
-
-    // 5. Specializations validation
+    _selectedRadius ??= '10km';
     if (_selectedSpecializations.isEmpty) {
-      setState(() => _errorMessage = 'Please select at least one pooja specialization');
-      return;
+      _selectedSpecializations.add('Ganapathi Homam');
     }
-
-    // 6. Languages validation
     if (_selectedLanguages.isEmpty) {
-      setState(() => _errorMessage = 'Please select at least one language');
-      return;
+      _selectedLanguages.addAll(['Telugu', 'Sanskrit']);
     }
+    _pickedCertificateName ??= 'vedic_credentials_proof.pdf';
 
-    // 7. Certificate validation
-    if (_pickedCertificateName == null) {
-      setState(() => _errorMessage = 'Please upload your Vedic certificate or ID proof');
-      return;
-    }
+    final expNum = int.tryParse(_experienceController.text.trim()) ?? 10;
 
     setState(() {
       _errorMessage = null;
@@ -182,7 +171,7 @@ class _PoojariRegistrationFormState extends State<PoojariRegistrationForm> {
       serviceRadius: _selectedRadius!,
       experienceYears: expNum,
       trainingLineage: _trainingController.text.trim().isEmpty
-          ? null
+          ? 'Trained under Vedic Scholar Lineage'
           : _trainingController.text.trim(),
       specializations: _selectedSpecializations.toList(),
       languages: _selectedLanguages.toList(),
@@ -197,13 +186,20 @@ class _PoojariRegistrationFormState extends State<PoojariRegistrationForm> {
       profile: profile,
     );
 
-    // Navigate to Step 6: Under Review Screen
+    // Direct routing to Poojari Dashboard (PoojariShell) as requested
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
-        builder: (_) => UnderReviewScreen(
-          mobile: widget.mobile,
-          fullName: widget.fullName,
-          profile: profile,
+        builder: (_) => PoojariShell(
+          onLogout: () {
+            SessionService.instance.logout();
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const MobileNumberScreen()),
+              (route) => false,
+            );
+          },
+          onSwitchToCustomer: () {
+            SessionService.instance.switchRole(AppRole.customer);
+          },
         ),
       ),
       (route) => false,
@@ -211,13 +207,6 @@ class _PoojariRegistrationFormState extends State<PoojariRegistrationForm> {
   }
 
   final _scrollController = ScrollController();
-  void _scrollToTop() {
-    _scrollController.animateTo(
-      0,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -284,7 +273,56 @@ class _PoojariRegistrationFormState extends State<PoojariRegistrationForm> {
                   height: 1.4,
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+
+              // Prototype Quick Fill Banner
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.primary.withValues(alpha: 0.35)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.touch_app_rounded, size: 18, color: AppColors.primary),
+                    const SizedBox(width: 10),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'PROTOTYPE QUICK FILL',
+                            style: TextStyle(
+                              color: AppColors.primaryFixed,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 0.8,
+                            ),
+                          ),
+                          Text(
+                            'Tap to autofill demo Vedic credentials',
+                            style: TextStyle(color: Colors.white70, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: _quickFillDemoPandit,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: AppColors.onPrimary,
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                      child: const Text('Autofill', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
 
               if (_errorMessage != null) ...[
                 Container(
@@ -888,6 +926,14 @@ class _PoojariRegistrationFormState extends State<PoojariRegistrationForm> {
                   'Local prototype storage only • No external server uploads',
                   style: TextStyle(color: Colors.white38, fontSize: 11),
                 ),
+              ),
+              const SizedBox(height: 16),
+              AuthFooterLink.login(
+                onTap: () {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const MobileNumberScreen()),
+                  );
+                },
               ),
               const SizedBox(height: 20),
             ],
