@@ -27,7 +27,7 @@ class SessionService extends ChangeNotifier {
 
   UserAccount? get currentUser => _currentUser;
   bool get isLoggedIn => _isLoggedIn && _currentUser != null;
-  AppRole get currentRole => _currentUser?.role ?? AppRole.customer;
+  AppRole? get currentRole => _currentUser?.role;
   PoojariVerificationStatus get poojariStatus =>
       _currentUser?.poojariStatus ?? PoojariVerificationStatus.underReview;
 
@@ -193,7 +193,6 @@ class SessionService extends ChangeNotifier {
   void switchRole(AppRole newRole) {
     if (_currentUser != null) {
       _currentUser = _currentUser!.copyWith(role: newRole);
-      _registeredAccounts[_normalizeMobile(_currentUser!.mobile)] = _currentUser!;
       notifyListeners();
     }
   }

@@ -1,12 +1,25 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:pocket_puja/core/models/calendar_models.dart';
 import 'package:pocket_puja/core/theme/app_theme.dart';
 import 'package:pocket_puja/core/widgets/glass.dart';
-import 'package:pocket_puja/customer/data/profile/profile_data.dart';
-import 'package:pocket_puja/customer/data/calendar/calendar_data.dart';
 
 class PersonalInfoScreen extends StatefulWidget {
-  const PersonalInfoScreen({super.key});
+  final String initialName;
+  final String initialCity;
+  final String initialMobile;
+  final String? initialDob;
+  final String? initialRashi;
+
+  const PersonalInfoScreen({
+    super.key,
+    this.initialName = 'సాయి కిరణ్',
+    this.initialCity = 'Hyderabad',
+    this.initialMobile = '+91 98765 43210',
+    this.initialDob = '15 Aug 1995',
+    this.initialRashi = 'Simha (సింహ)',
+  });
+
   @override
   State<PersonalInfoScreen> createState() => _PersonalInfoScreenState();
 }
@@ -32,10 +45,10 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: currentUser.name);
-    _cityController = TextEditingController(text: currentUser.city);
+    _nameController = TextEditingController(text: widget.initialName);
+    _cityController = TextEditingController(text: widget.initialCity);
     _newMobileController = TextEditingController();
-    _dob = currentUser.dob;
+    _dob = widget.initialDob;
     _nameController.addListener(_markDirty);
     _cityController.addListener(_markDirty);
     _newMobileController.addListener(() => setState(() {}));
@@ -123,7 +136,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
 
   String get _rashiFromDob {
     // Simplified sun-sign style — not birth-star accurate, by design (no time/place needed).
-    return currentUser.rashi;
+    return widget.initialRashi ?? 'Simha (సింహ)';
   }
 
   @override
@@ -246,8 +259,9 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   label: 'Cancel',
                   onTap: _dirty
                       ? () => setState(() {
-                          _nameController.text = currentUser.name;
-                          _cityController.text = currentUser.city;
+                          _nameController.text = widget.initialName;
+                          _cityController.text = widget.initialCity;
+                          _dob = widget.initialDob;
                           _dirty = false;
                         })
                       : null,
@@ -289,7 +303,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
           children: [
             Expanded(
               child: Text(
-                currentUser.mobile,
+                widget.initialMobile,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 15,

@@ -1,4 +1,6 @@
 // Mock data for the Calendar module — Panchangam, Festivals, Rashi.
+export 'package:pocket_puja/core/models/calendar_models.dart';
+
 
 class FestivalData {
   final int day, month;
@@ -41,18 +43,5 @@ const samplePanchangam = PanchangamDetail(
   durmuhurtham: 'ఉ. 8:33 - ఉ. 9:22, మ. 12:37 - మ. 1:25',
 );
 
-class RashiSign {
-  final String name, telugu, symbol;
-  const RashiSign(this.name, this.telugu, this.symbol);
-}
-
-const rashiSigns = [
-  RashiSign('Mesha', 'మేష', '♈'), RashiSign('Vrishabha', 'వృషభ', '♉'),
-  RashiSign('Mithuna', 'మిథున', '♊'), RashiSign('Karka', 'కర్క', '♋'),
-  RashiSign('Simha', 'సింహ', '♌'), RashiSign('Kanya', 'కన్య', '♍'),
-  RashiSign('Tula', 'తుల', '♎'), RashiSign('Vrischika', 'వృశ్చిక', '♏'),
-  RashiSign('Dhanu', 'ధను', '♐'), RashiSign('Makara', 'మకర', '♑'),
-  RashiSign('Kumbha', 'కుంభ', '♒'), RashiSign('Meena', 'మీన', '♓'),
-];
 
 const sampleRashiPrediction = 'Financial gains are likely today. A good day for new beginnings in career matters. Family harmony is favored in the evening hours.';

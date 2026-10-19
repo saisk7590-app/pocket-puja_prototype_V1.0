@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pocket_puja/core/services/poojari_controller.dart';
 import 'package:pocket_puja/core/widgets/glass.dart';
+import 'package:pocket_puja/poojari/screens/availability/availability_calendar_screen.dart';
 import 'package:pocket_puja/poojari/screens/booking_detail/poojari_booking_detail_screen.dart';
 import 'package:pocket_puja/poojari/screens/schedule/my_schedule_screen.dart';
 import 'package:pocket_puja/poojari/widgets/booking/poojari_assignment_card.dart';
@@ -123,6 +124,28 @@ void main() {
       // Must have navigated to PoojariBookingDetailScreen
       expect(find.byType(PoojariBookingDetailScreen), findsOneWidget);
       expect(find.text('Booking Detail'), findsOneWidget);
+    });
+
+    testWidgets('Tapping Manage Availability action button opens AvailabilityCalendarScreen', (tester) async {
+      tester.view.physicalSize = const Size(800, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: MyScheduleScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final manageAvailabilityBtn = find.byTooltip('Manage Availability');
+      expect(manageAvailabilityBtn, findsOneWidget);
+
+      await tester.tap(manageAvailabilityBtn);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AvailabilityCalendarScreen), findsOneWidget);
+      expect(find.text('Availability Calendar'), findsOneWidget);
     });
   });
 }

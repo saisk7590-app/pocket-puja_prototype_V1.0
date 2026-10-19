@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocket_puja/core/theme/app_theme.dart';
 import 'package:pocket_puja/core/widgets/glass.dart';
 import 'package:pocket_puja/core/widgets/network_image_placeholder.dart';
-import 'package:pocket_puja/customer/widgets/booking/status_stepper.dart';
+import 'package:pocket_puja/shared/widgets/booking/status_stepper.dart';
 import 'package:pocket_puja/customer/data/shop/shop_data.dart';
 
 class OrdersScreen extends StatefulWidget {

@@ -3,8 +3,8 @@ import 'package:pocket_puja/core/services/poojari_controller.dart';
 import 'package:pocket_puja/core/theme/app_theme.dart';
 import 'package:pocket_puja/core/widgets/glass.dart';
 import 'package:pocket_puja/core/widgets/nav_constants.dart';
-import 'package:pocket_puja/core/widgets/poojari_mode_badge.dart';
 import 'package:pocket_puja/poojari/screens/notifications/poojari_notifications_screen.dart';
+import 'package:pocket_puja/poojari/screens/profile/poojari_profile_screen.dart';
 import 'package:pocket_puja/poojari/widgets/booking/poojari_assignment_card.dart';
 
 /// Tab 1: Assigned Poojas Screen (BLOCK 6)
@@ -21,10 +21,12 @@ import 'package:pocket_puja/poojari/widgets/booking/poojari_assignment_card.dart
 /// 6. Empty state matching Customer's Booking List pattern.
 class AssignedPoojasScreen extends StatefulWidget {
   final VoidCallback? onSwitchToCustomer;
+  final VoidCallback? onLogout;
 
   const AssignedPoojasScreen({
     super.key,
     this.onSwitchToCustomer,
+    this.onLogout,
   });
 
   @override
@@ -92,10 +94,28 @@ class _AssignedPoojasScreenState extends State<AssignedPoojasScreen> with Single
               children: [
                 // Top Header Row
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      IconButton(
+                        tooltip: 'Profile',
+                        icon: const Icon(
+                          Icons.account_circle_outlined,
+                          color: AppColors.primary,
+                          size: 26,
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => PoojariProfileScreen(
+                                onLogout: widget.onLogout ?? () {},
+                                onSwitchToCustomer: widget.onSwitchToCustomer,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(width: 4),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,11 +159,6 @@ class _AssignedPoojasScreenState extends State<AssignedPoojasScreen> with Single
                               color: AppColors.primary,
                               size: 24,
                             ),
-                          ),
-                          const SizedBox(width: 4),
-                          PoojariModeBadge(
-                            isPoojari: true,
-                            onToggle: widget.onSwitchToCustomer,
                           ),
                         ],
                       ),

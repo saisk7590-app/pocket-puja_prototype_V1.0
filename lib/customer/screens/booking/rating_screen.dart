@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pocket_puja/core/models/review.dart';
+import 'package:pocket_puja/core/services/poojari_controller.dart';
+import 'package:pocket_puja/core/services/session_service.dart';
 import 'package:pocket_puja/core/theme/app_theme.dart';
 import 'package:pocket_puja/core/widgets/glass.dart';
 
@@ -15,11 +18,46 @@ class _RatingScreenState extends State<RatingScreen> {
   bool _isSubmitting = false;
 
   Future<void> _submit() async {
+    if (_rating <= 0) return;
     setState(() => _isSubmitting = true);
-    await Future.delayed(const Duration(milliseconds: 800));
+
+    // Look up customer first name from current session
+    final session = SessionService.instance;
+    final userName = session.currentUser?.fullName ?? 'Devotee';
+    final firstName = userName.trim().split(' ').first;
+
+    // Look up booking date or fallback to Today
+    final poojariCtrl = PoojariController.instance;
+    final booking = poojariCtrl.getBookingByRef(widget.bookingRef);
+    final bookingDate = booking?.date ?? 'Today';
+
+    final commentText = _reviewController.text.trim();
+
+    final newReview = Review(
+      id: 'REV-${DateTime.now().millisecondsSinceEpoch}',
+      bookingId: widget.bookingRef,
+      customerFirstName: firstName.isNotEmpty ? firstName : 'Devotee',
+      stars: _rating,
+      comment: commentText.isNotEmpty ? commentText : null,
+      poojaName: widget.poojaName,
+      date: bookingDate,
+      createdAt: DateTime.now(),
+    );
+
+    // Single source of truth live sync: updates reviews list, recalculates
+    // averageRating and distribution, adds REVIEWS & RATINGS notification,
+    // and updates Dashboard Rating KPI square without refresh.
+    poojariCtrl.addReview(newReview);
+
+    await Future.delayed(const Duration(milliseconds: 600));
     if (!mounted) return;
     Navigator.of(context).pop();
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Thank you for your feedback!')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Thank you for your feedback!'),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override

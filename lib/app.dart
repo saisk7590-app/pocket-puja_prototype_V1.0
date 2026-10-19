@@ -3,7 +3,7 @@ import 'package:pocket_puja/core/services/audio_controller.dart';
 import 'package:pocket_puja/core/services/poojari_controller.dart';
 import 'package:pocket_puja/core/services/session_service.dart';
 import 'package:pocket_puja/core/theme/app_theme.dart';
-import 'package:pocket_puja/customer/shell/app_shell.dart';
+import 'package:pocket_puja/customer/shell/customer_shell.dart';
 import 'package:pocket_puja/poojari/shell/poojari_shell.dart';
 import 'package:pocket_puja/shared/auth/mobile_number_screen.dart';
 import 'package:pocket_puja/shared/auth/otp_verification_screen.dart';
@@ -81,7 +81,7 @@ class _PocketPujaAppState extends State<PocketPujaApp> {
           mobile: _mobile,
           onExistingUserSuccess: (user) {
             _navigatorKey.currentState!.pushAndRemoveUntil(
-              MaterialPageRoute(builder: (_) => _buildHomeScreen()),
+              MaterialPageRoute(builder: (_) => _buildHomeScreen(roleOverride: user.role)),
               (route) => false,
             );
           },
@@ -102,18 +102,19 @@ class _PocketPujaAppState extends State<PocketPujaApp> {
     );
   }
 
-  Widget _buildHomeScreen() {
-    final role = _sessionService.currentRole;
+  Widget _buildHomeScreen({AppRole? roleOverride}) {
+    final role = roleOverride ?? _sessionService.currentRole;
     if (role == AppRole.poojari) {
       return PoojariShell(
         onLogout: _handleLogout,
         onSwitchToCustomer: () => _switchRole(AppRole.customer),
       );
-    } else {
+    } else if (role == AppRole.customer) {
       return AppShell(
         onLogout: _handleLogout,
       );
     }
+    return _buildLoginScreen();
   }
 
   Widget _buildLoginScreen() {
@@ -137,7 +138,9 @@ class _PocketPujaAppState extends State<PocketPujaApp> {
             debugShowCheckedModeBanner: false,
             theme: AppTheme.theme,
             navigatorKey: _navigatorKey,
-            home: _sessionService.isLoggedIn ? _buildHomeScreen() : _buildLoginScreen(),
+            home: (_sessionService.isLoggedIn && _sessionService.currentRole != null)
+                ? _buildHomeScreen()
+                : _buildLoginScreen(),
           ),
         ),
       ),

@@ -3,9 +3,10 @@ import 'package:pocket_puja/core/services/poojari_controller.dart';
 import 'package:pocket_puja/core/theme/app_theme.dart';
 import 'package:pocket_puja/core/widgets/glass.dart';
 import 'package:pocket_puja/core/widgets/nav_constants.dart';
-import 'package:pocket_puja/core/widgets/poojari_mode_badge.dart';
+import 'package:pocket_puja/poojari/screens/availability/availability_calendar_screen.dart';
 import 'package:pocket_puja/poojari/screens/booking_detail/poojari_booking_detail_screen.dart';
 import 'package:pocket_puja/poojari/screens/notifications/poojari_notifications_screen.dart';
+import 'package:pocket_puja/poojari/screens/profile/poojari_profile_screen.dart';
 import 'package:pocket_puja/poojari/widgets/booking/poojari_assignment_card.dart';
 
 /// BLOCK 10 — My Schedule Screen
@@ -22,10 +23,12 @@ import 'package:pocket_puja/poojari/widgets/booking/poojari_assignment_card.dart
 /// - List-only view (no calendar grid)
 class MyScheduleScreen extends StatefulWidget {
   final VoidCallback? onSwitchToCustomer;
+  final VoidCallback? onLogout;
 
   const MyScheduleScreen({
     super.key,
     this.onSwitchToCustomer,
+    this.onLogout,
   });
 
   @override
@@ -126,10 +129,28 @@ class _MyScheduleScreenState extends State<MyScheduleScreen> {
               children: [
                 // Top Header Row
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      IconButton(
+                        tooltip: 'Profile',
+                        icon: const Icon(
+                          Icons.account_circle_outlined,
+                          color: AppColors.primary,
+                          size: 26,
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => PoojariProfileScreen(
+                                onLogout: widget.onLogout ?? () {},
+                                onSwitchToCustomer: widget.onSwitchToCustomer,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(width: 4),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,6 +179,21 @@ class _MyScheduleScreenState extends State<MyScheduleScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
+                            tooltip: 'Manage Availability',
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const AvailabilityCalendarScreen(),
+                                ),
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.edit_calendar_rounded,
+                              color: AppColors.primary,
+                              size: 24,
+                            ),
+                          ),
+                          IconButton(
                             tooltip: 'Notifications',
                             onPressed: () {
                               Navigator.of(context).push(
@@ -171,11 +207,6 @@ class _MyScheduleScreenState extends State<MyScheduleScreen> {
                               color: AppColors.primary,
                               size: 24,
                             ),
-                          ),
-                          const SizedBox(width: 4),
-                          PoojariModeBadge(
-                            isPoojari: true,
-                            onToggle: widget.onSwitchToCustomer,
                           ),
                         ],
                       ),

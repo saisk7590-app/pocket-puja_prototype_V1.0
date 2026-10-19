@@ -5,12 +5,12 @@ import 'package:pocket_puja/core/widgets/network_image_placeholder.dart';
 import 'package:pocket_puja/customer/data/profile/profile_data.dart';
 import 'package:pocket_puja/customer/data/audio/audio_data.dart';
 import 'package:pocket_puja/customer/screens/subscription/subscription_screen.dart';
-import 'package:pocket_puja/customer/screens/profile/personal_info_screen.dart';
-import 'package:pocket_puja/customer/screens/profile/addresses_screen.dart';
 import 'package:pocket_puja/customer/screens/profile/orders_screen.dart';
-import 'package:pocket_puja/customer/screens/profile/notification_preferences_screen.dart';
-import 'package:pocket_puja/customer/screens/profile/support_screen.dart';
-import 'package:pocket_puja/customer/screens/profile/about_screen.dart';
+import 'package:pocket_puja/shared/widgets/profile/about_screen.dart';
+import 'package:pocket_puja/shared/widgets/profile/addresses_screen.dart';
+import 'package:pocket_puja/shared/widgets/profile/notification_preferences_screen.dart';
+import 'package:pocket_puja/shared/widgets/profile/personal_info_screen.dart';
+import 'package:pocket_puja/shared/widgets/profile/support_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final VoidCallback onLogout;

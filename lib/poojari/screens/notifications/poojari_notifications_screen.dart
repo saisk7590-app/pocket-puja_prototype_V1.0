@@ -68,11 +68,19 @@ class PoojariNotificationsScreen extends StatelessWidget {
       ),
 
       // 3. REVIEWS & RATINGS
-      const _PoojariNotifSection(
+      _PoojariNotifSection(
         icon: Icons.star_rounded,
         title: 'REVIEWS & RATINGS',
         items: [
-          _PoojariNotifItem(
+          ...poojariController.reviewNotifications.map(
+            (n) => _PoojariNotifItem(
+              icon: n.icon,
+              title: n.title,
+              body: n.body,
+              time: n.time,
+            ),
+          ),
+          const _PoojariNotifItem(
             icon: Icons.stars_rounded,
             title: 'You received a new 5★ review!',
             body: 'Anand Sharma: "Shri Panditji performed our Gruhapravesham with deep Vedic devotion and divine grace. Highly blessed!"',

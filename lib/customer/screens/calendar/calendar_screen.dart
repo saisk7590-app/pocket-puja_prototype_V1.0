@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_puja/core/theme/app_theme.dart';
 import 'package:pocket_puja/core/widgets/glass.dart';
-import 'package:pocket_puja/customer/widgets/calendar/month_grid.dart';
+import 'package:pocket_puja/shared/widgets/calendar/month_grid.dart';
 import 'package:pocket_puja/customer/data/calendar/calendar_data.dart';
 import 'package:pocket_puja/customer/screens/calendar/full_panchangam_screen.dart';
 import 'package:pocket_puja/customer/screens/calendar/festivals_screen.dart';
@@ -113,6 +113,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
               focusedMonth: _focusedMonth,
               selectedDay: _selectedDay,
               onSelectDay: (d) => setState(() => _selectedDay = d),
+              eventDotColor: (date) {
+                final fest = festivals
+                    .where((f) => f.day == date.day && f.month == date.month)
+                    .toList();
+                if (fest.isEmpty) return null;
+                switch (fest.first.type) {
+                  case 'amavasya': return Colors.white70;
+                  case 'pournami': return const Color(0xFFF2CA50);
+                  case 'ekadasi': return const Color(0xFF9DE6B4);
+                  default: return const Color(0xFFE05353);
+                }
+              },
             ),
           ),
           const SizedBox(height: 20),

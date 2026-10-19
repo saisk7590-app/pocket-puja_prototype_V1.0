@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocket_puja/core/theme/app_theme.dart';
 import 'package:pocket_puja/core/widgets/glass.dart';
 import 'package:pocket_puja/customer/data/booking/booking_data.dart';
-import 'package:pocket_puja/customer/screens/profile/addresses_screen.dart';
+import 'package:pocket_puja/shared/widgets/profile/addresses_screen.dart';
 import 'package:pocket_puja/customer/screens/booking/booking_detail_screen.dart';
 import 'package:pocket_puja/customer/data/profile/profile_data.dart';
 

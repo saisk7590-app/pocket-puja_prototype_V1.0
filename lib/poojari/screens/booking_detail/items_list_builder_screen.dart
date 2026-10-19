@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_puja/core/models/pooja_suggested_items.dart';
+import 'package:pocket_puja/core/models/product_data.dart';
 import 'package:pocket_puja/core/services/poojari_controller.dart';
 import 'package:pocket_puja/core/theme/app_theme.dart';
 import 'package:pocket_puja/core/widgets/glass.dart';
-import 'package:pocket_puja/customer/data/shop/shop_data.dart';
-import 'package:pocket_puja/customer/widgets/booking/pooja_item_row.dart';
+import 'package:pocket_puja/shared/widgets/booking/pooja_item_row.dart';
 
 /// BLOCK 9 — Items List Builder
 /// Enables the Poojari to prepare and send a required samagri checklist to the customer.

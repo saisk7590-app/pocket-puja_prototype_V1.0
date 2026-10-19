@@ -70,7 +70,7 @@ void main() {
 
       // Verify stats increment
       expect(controller.poojasCompleted, initialCompleted + 1);
-      expect(controller.thisMonthEarningsRupees, initialEarnings + (booking.feePaise ~/ 100));
+      expect(controller.thisMonthEarningsRupees, initialEarnings + booking.breakdown.netRupees);
 
       // Verify earnings notification triggered
       expect(controller.earningsNotifications, isNotEmpty);

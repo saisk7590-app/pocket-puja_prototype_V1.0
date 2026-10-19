@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocket_puja/core/theme/app_theme.dart';
 import 'package:pocket_puja/core/widgets/glass.dart';
 import 'package:pocket_puja/customer/widgets/booking/pandit_card.dart';
-import 'package:pocket_puja/customer/widgets/booking/status_stepper.dart';
+import 'package:pocket_puja/shared/widgets/booking/status_stepper.dart';
 import 'package:pocket_puja/customer/data/booking/booking_data.dart';
 import 'package:pocket_puja/customer/screens/booking/items_checklist_screen.dart';
 import 'package:pocket_puja/customer/screens/booking/rating_screen.dart';

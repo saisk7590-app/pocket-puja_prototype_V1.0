@@ -4,7 +4,7 @@ import 'package:pocket_puja/core/models/user_account.dart';
 import 'package:pocket_puja/core/services/session_service.dart';
 import 'package:pocket_puja/core/theme/app_theme.dart';
 import 'package:pocket_puja/core/widgets/glass.dart';
-import 'package:pocket_puja/customer/shell/app_shell.dart';
+import 'package:pocket_puja/customer/shell/customer_shell.dart';
 import 'package:pocket_puja/poojari/shell/poojari_shell.dart';
 import 'package:pocket_puja/shared/auth/mobile_number_screen.dart';
 

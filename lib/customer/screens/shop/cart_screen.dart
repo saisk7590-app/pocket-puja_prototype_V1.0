@@ -4,7 +4,7 @@ import 'package:pocket_puja/core/widgets/glass.dart';
 import 'package:pocket_puja/core/widgets/network_image_placeholder.dart';
 import 'package:pocket_puja/customer/data/shop/shop_data.dart';
 import 'package:pocket_puja/customer/data/profile/profile_data.dart';
-import 'package:pocket_puja/customer/screens/profile/addresses_screen.dart';
+import 'package:pocket_puja/shared/widgets/profile/addresses_screen.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});

@@ -3,7 +3,7 @@ import 'package:pocket_puja/core/models/pooja_suggested_items.dart';
 import 'package:pocket_puja/core/services/poojari_controller.dart';
 import 'package:pocket_puja/core/theme/app_theme.dart';
 import 'package:pocket_puja/core/widgets/glass.dart';
-import 'package:pocket_puja/customer/widgets/booking/status_stepper.dart';
+import 'package:pocket_puja/shared/widgets/booking/status_stepper.dart';
 import 'package:pocket_puja/poojari/screens/booking_detail/items_list_builder_screen.dart';
 import 'package:pocket_puja/poojari/widgets/booking_detail/customer_card.dart';
 
@@ -274,7 +274,7 @@ class PoojariBookingDetailScreen extends StatelessWidget {
         PoojariController.instance.completeBooking(b.ref);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('🎉 ${b.poojaName} completed! ₹${b.feeRupees} credited to your earnings.'),
+            content: Text('🎉 ${b.poojaName} completed! ₹${b.breakdown.netRupees} credited to your earnings.'),
             backgroundColor: AppColors.success,
           ),
         );

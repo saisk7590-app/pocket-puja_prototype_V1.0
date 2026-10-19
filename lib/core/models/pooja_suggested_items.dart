@@ -1,8 +1,8 @@
-import 'package:pocket_puja/customer/data/shop/shop_data.dart';
+import 'package:pocket_puja/core/models/product_data.dart';
 
 /// BLOCK 9 — Suggested items mapping for Vedic Rituals.
 /// Maps every Pooja Name / Type to `List<ItemId>` referencing the exact same
-/// ProductData catalog in `lib/customer/data/shop/shop_data.dart`.
+/// ProductData catalog in `lib/core/models/product_data.dart`.
 const Map<String, List<String>> poojaSuggestedItemIds = {
   // Ganesha Pooja / Ganapathi Homam
   'Ganesha Pooja': ['pr4', 'pr7', 'pr1', 'pr2', 'pr9', 'pr15', 'pr10', 'pr5'],

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:pocket_puja/core/models/user_account.dart';
 import 'package:pocket_puja/core/services/poojari_controller.dart';
 import 'package:pocket_puja/core/services/session_service.dart';
 import 'package:pocket_puja/core/theme/app_theme.dart';
 import 'package:pocket_puja/core/widgets/glass.dart';
 import 'package:pocket_puja/core/widgets/poojari_mode_badge.dart';
-import 'package:pocket_puja/core/widgets/verification_banner.dart';
-import 'package:pocket_puja/poojari/screens/availability/poojari_availability_screen.dart';
+import 'package:pocket_puja/poojari/screens/availability/availability_calendar_screen.dart';
 import 'package:pocket_puja/poojari/screens/booking_detail/poojari_booking_detail_screen.dart';
 import 'package:pocket_puja/poojari/screens/notifications/poojari_notifications_screen.dart';
+import 'package:pocket_puja/poojari/screens/profile/poojari_profile_screen.dart';
+import 'package:pocket_puja/poojari/screens/reviews/reviews_received_screen.dart';
 import 'package:pocket_puja/poojari/widgets/dashboard/availability_nudge_card.dart';
 import 'package:pocket_puja/poojari/widgets/dashboard/poojari_kpi_square.dart';
 import 'package:pocket_puja/poojari/widgets/dashboard/todays_assignment_card.dart';
@@ -27,10 +27,12 @@ import 'package:pocket_puja/poojari/widgets/dashboard/upcoming_booking_tile.dart
 /// Explicitly excludes Customer-specific features (no audio/chants, no shop, no festival banners).
 class PoojariDashboardScreen extends StatelessWidget {
   final VoidCallback? onSwitchToCustomer;
+  final VoidCallback? onLogout;
 
   const PoojariDashboardScreen({
     super.key,
     this.onSwitchToCustomer,
+    this.onLogout,
   });
 
   String _getTimeGreeting() {
@@ -52,17 +54,17 @@ class PoojariDashboardScreen extends StatelessWidget {
         : '₹${controller.thisMonthEarningsRupees}';
 
     final squares = <Widget>[
-      // a. Rating — static seed value
+      // a. Rating — LIVE aggregate rating from PoojariController
       PoojariKpiSquare(
         icon: Icons.star_rounded,
         iconColor: const Color(0xFFFFB84D),
         label: 'Rating',
         value: '${controller.rating} ★',
         onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Devotee rating based on verified rituals'),
-              duration: Duration(seconds: 1),
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const ReviewsReceivedScreen(),
             ),
           );
         },
@@ -111,7 +113,6 @@ class PoojariDashboardScreen extends StatelessWidget {
     final poojariController = PoojariControllerScope.maybeOf(context) ?? PoojariController.instance;
 
     final displayName = user?.fullName ?? 'Shri Venkata Ramana';
-    final isVerified = user?.poojariStatus == PoojariVerificationStatus.verified;
 
     return GlassScaffold(
       showAppBar: false,
@@ -134,8 +135,26 @@ class PoojariDashboardScreen extends StatelessWidget {
                   // ==========================================
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      IconButton(
+                        tooltip: 'Profile',
+                        icon: const Icon(
+                          Icons.account_circle_outlined,
+                          color: AppColors.primary,
+                          size: 26,
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => PoojariProfileScreen(
+                                onLogout: onLogout ?? () {},
+                                onSwitchToCustomer: onSwitchToCustomer,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(width: 4),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,7 +175,7 @@ class PoojariDashboardScreen extends StatelessWidget {
                               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                     color: AppColors.primary,
                                     fontWeight: FontWeight.w800,
-                                    fontSize: 20,
+                                    fontSize: 18,
                                     shadows: AppTheme.goldGlow,
                                   ),
                             ),
@@ -192,16 +211,7 @@ class PoojariDashboardScreen extends StatelessWidget {
                     ],
                   ),
 
-                  // ==========================================
-                  // SECTION 2: VERIFICATION STATUS BANNER (CONDITIONAL)
-                  // Takes zero space if status == verified
-                  // ==========================================
-                  if (!isVerified) ...[
-                    const SizedBox(height: 16),
-                    const VerificationPendingBanner(),
-                  ],
-
-                  const SizedBox(height: 22),
+                  const SizedBox(height: 16),
 
                   // ==========================================
                   // SECTION 3: TODAY'S ASSIGNMENT(S)
@@ -380,8 +390,7 @@ class PoojariDashboardScreen extends StatelessWidget {
 
                   // ==========================================
                   // SECTION 6: AVAILABILITY NUDGE (CONDITIONAL)
-                  // Stubbed condition as true for prototype:
-                  // // TODO: replace with real availability check once lib/poojari/screens/availability/ exists
+                  // Shows nudge when calendar has no blocks/recurring off-days in the next 7 days.
                   // ==========================================
                   if (poojariController.showAvailabilityNudge) ...[
                     const SizedBox(height: 14),
@@ -390,7 +399,7 @@ class PoojariDashboardScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const PoojariAvailabilityScreen(),
+                            builder: (_) => const AvailabilityCalendarScreen(),
                           ),
                         );
                       },

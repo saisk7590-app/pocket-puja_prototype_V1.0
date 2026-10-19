@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:pocket_puja/core/models/product_data.dart';
 import 'package:pocket_puja/core/theme/app_theme.dart';
 import 'package:pocket_puja/core/widgets/glass.dart';
 import 'package:pocket_puja/core/widgets/network_image_placeholder.dart';
-import 'package:pocket_puja/customer/data/shop/shop_data.dart';
 
 /// Reusable item row for Customer's checklist and Poojari's items builder.
 /// Displays item thumbnail, name, description, price, and selection toggle.
